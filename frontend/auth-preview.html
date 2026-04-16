@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Auth Pages — Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+/* ── Tokens ─────────────────────────────────────────────────────────────── */
+:root {
+  --bg:           #EDEBE6;
+  --card:         #ffffff;
+  --border:       #D4D1CA;
+  --border-input: #C8C5BE;
+  --text:         #1A1A18;
+  --text-muted:   #6B6960;
+  --text-subtle:  #8A8880;
+  --text-ph:      #ABAAA4;
+  --accent:       #534AB7;
+  --accent-hover: #4840A0;
+  --accent-light: #EEEDFE;
+  --accent-bright:#7F77DD;
+  --error:        #C62828;
+  --error-bg:     #FFEBEE;
+  --success:      #2E7D32;
+  --radius:       6px;
+  --radius-lg:    8px;
+  --shadow-lg:    0 4px 24px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.04);
+  --font-sans:    'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono:    'IBM Plex Mono', 'Menlo', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  padding: 40px 24px 64px;
+}
+
+/* ── Layout: two previews side by side ─────────────────────────────────── */
+.preview-header {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.preview-header::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.frames {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.frame-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-ph);
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* ── Browser chrome ─────────────────────────────────────────────────────── */
+.browser {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--border);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+.browser-bar {
+  background: #F0EEE9;
+  border-bottom: 1px solid var(--border);
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.browser-dots { display: flex; gap: 5px; }
+.browser-dots span {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  display: block;
+}
+.browser-url {
+  flex: 1;
+  background: #E4E2DC;
+  border-radius: 4px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  color: var(--text-subtle);
+}
+
+/* ── Auth page (inside browser) ─────────────────────────────────────────── */
+.auth-page {
+  background: var(--bg);
+  padding: 32px 24px 40px;
+  min-height: 480px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  width: 100%;
+  max-width: 340px;
+}
+
+/* Logo */
+.auth-logo {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: 0.06em;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.logo-dot { color: var(--accent-bright); }
+
+/* Headings */
+.auth-title {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  margin-bottom: 3px;
+}
+.auth-sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-subtle);
+  margin-bottom: 24px;
+}
+
+/* Form */
+.auth-form { display: flex; flex-direction: column; gap: 16px; }
+
+.field { display: flex; flex-direction: column; gap: 5px; }
+
+.field-label {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.input {
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--border-input);
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--text);
+  font-size: 13px;
+  font-family: var(--font-sans);
+  width: 100%;
+}
+
+.input.focused {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
+  outline: none;
+}
+
+.input-placeholder {
+  color: var(--text-ph);
+  font-size: 12px;
+}
+
+/* Button */
+.btn-primary {
+  height: 40px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.15s;
+}
+
+/* Spinner */
+.spinner {
+  display: inline-block;
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Error */
+.error-msg {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--error);
+  padding: 8px 10px;
+  background: var(--error-bg);
+  border-radius: 4px;
+  border: 1px solid #FFCDD2;
+}
+
+/* Footer link */
+.auth-footer {
+  margin-top: 18px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-subtle);
+  text-align: center;
+}
+.auth-footer a {
+  color: var(--accent);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ── State tabs (for toggling view variants) ────────────────────────────── */
+.state-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+  justify-content: center;
+}
+.state-tab {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  padding: 3px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text-subtle);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.state-tab.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* ── Success state overlay ─────────────────────────────────────────────── */
+.success-msg {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--success);
+  padding: 8px 10px;
+  background: #E8F5E9;
+  border-radius: 4px;
+  border: 1px solid #C8E6C9;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── Divider ──────────────────────────────────────────────────────────────  */
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  margin-top: 36px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+</style>
+</head>
+<body>
+
+<!-- ── Login variants ──────────────────────────────────────────────────────── -->
+<div class="preview-header">Login page — state variants</div>
+
+<div class="frames">
+
+  <!-- Login: idle -->
+  <div>
+    <div class="state-tabs">
+      <span class="state-tab active">Idle</span>
+    </div>
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="browser-dots"><span></span><span></span><span></span></div>
+        <div class="browser-url">localhost:5173/login</div>
+      </div>
+      <div class="auth-page">
+        <div class="auth-card">
+          <div class="auth-logo">llm<span class="logo-dot">·</span>eval</div>
+          <h1 class="auth-title">Sign in</h1>
+          <p class="auth-sub">Enter your credentials to continue</p>
+          <div class="auth-form">
+            <div class="field">
+              <label class="field-label">Email</label>
+              <div class="input" style="display:flex;align-items:center;">
+                <span class="input-placeholder">you@example.com</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Password</label>
+              <div class="input" style="display:flex;align-items:center;">
+                <span class="input-placeholder">••••••••</span>
+              </div>
+            </div>
+            <button class="btn-primary">Sign in</button>
+          </div>
+          <p class="auth-footer">No account? <a>Create one</a></p>
+        </div>
+      </div>
+    </div>
+    <p class="frame-label">Default — empty form</p>
+  </div>
+
+  <!-- Login: filled + loading -->
+  <div>
+    <div class="state-tabs">
+      <span class="state-tab active">Submitting</span>
+    </div>
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="browser-dots"><span></span><span></span><span></span></div>
+        <div class="browser-url">localhost:5173/login</div>
+      </div>
+      <div class="auth-page">
+        <div class="auth-card">
+          <div class="auth-logo">llm<span class="logo-dot">·</span>eval</div>
+          <h1 class="auth-title">Sign in</h1>
+          <p class="auth-sub">Enter your credentials to continue</p>
+          <div class="auth-form">
+            <div class="field">
+              <label class="field-label">Email</label>
+              <div class="input focused" style="display:flex;align-items:center;">
+                <span style="font-size:13px;color:var(--text);">mario@example.com</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Password</label>
+              <div class="input" style="display:flex;align-items:center;">
+                <span style="font-size:14px;color:var(--text);letter-spacing:0.2em;">••••••••</span>
+              </div>
+            </div>
+            <button class="btn-primary" style="opacity:0.85;cursor:not-allowed;">
+              <span class="spinner"></span>
+              Signing in…
+            </button>
+          </div>
+          <p class="auth-footer">No account? <a>Create one</a></p>
+        </div>
+      </div>
+    </div>
+    <p class="frame-label">In-flight — spinner active</p>
+  </div>
+
+</div>
+
+<!-- Login: error state (full width) -->
+<div class="section-label">Login — error state</div>
+
+<div class="frames">
+  <div>
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="browser-dots"><span></span><span></span><span></span></div>
+        <div class="browser-url">localhost:5173/login</div>
+      </div>
+      <div class="auth-page">
+        <div class="auth-card">
+          <div class="auth-logo">llm<span class="logo-dot">·</span>eval</div>
+          <h1 class="auth-title">Sign in</h1>
+          <p class="auth-sub">Enter your credentials to continue</p>
+          <div class="auth-form">
+            <div class="field">
+              <label class="field-label">Email</label>
+              <div class="input" style="display:flex;align-items:center;border-color:#FFCDD2;">
+                <span style="font-size:13px;color:var(--text);">wrong@example.com</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Password</label>
+              <div class="input" style="display:flex;align-items:center;border-color:#FFCDD2;">
+                <span style="font-size:14px;color:var(--text);letter-spacing:0.2em;">••••••</span>
+              </div>
+            </div>
+            <p class="error-msg">Incorrect email or password.</p>
+            <button class="btn-primary">Sign in</button>
+          </div>
+          <p class="auth-footer">No account? <a>Create one</a></p>
+        </div>
+      </div>
+    </div>
+    <p class="frame-label">Error — invalid credentials</p>
+  </div>
+
+  <div>
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="browser-dots"><span></span><span></span><span></span></div>
+        <div class="browser-url">localhost:5173/login</div>
+      </div>
+      <div class="auth-page">
+        <div class="auth-card">
+          <div class="auth-logo">llm<span class="logo-dot">·</span>eval</div>
+          <h1 class="auth-title">Sign in</h1>
+          <p class="auth-sub">Enter your credentials to continue</p>
+          <div class="auth-form">
+            <div class="field">
+              <label class="field-label">Email</label>
+              <div class="input" style="display:flex;align-items:center;">
+                <span style="font-size:13px;color:var(--text);">mario@example.com</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Password</label>
+              <div class="input" style="display:flex;align-items:center;">
+                <span style="font-size:14px;color:var(--text);letter-spacing:0.2em;">••••••••</span>
+              </div>
+            </div>
+            <p class="error-msg">Cannot reach the server. Check that the backend is running.</p>
+            <button class="btn-primary">Sign in</button>
+          </div>
+          <p class="auth-footer">No account? <a>Create one</a></p>
+        </div>
+      </div>
+    </div>
+    <p class="frame-label">Error — backend unreachable</p>
+  </div>
+</div>
+
+
+<!-- ── Register variants ───────────────────────────────────────────────────── -->
+<div class="section-label" style="margin-top:48px;">Register page — state variants</div>
+
+<div class="frames">
+
+  <!-- Register: idle -->
+  <div>
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="browser-dots"><span></span><span></span><span></span></div>
+        <div class="browser-url">localhost:5173/register</div>
+      </div>
+      <div class="auth-page">
+        <div class="auth-card">
+          <div class="auth-logo">llm<span class="logo-dot">·</span>eval</div>
+          <h1 class="auth-title">Create account</h1>
+          <p class="auth-sub">Register to start evaluating LLM responses</p>
+          <div class="auth-form">
+            <div class="field">
+              <label class="field-label">Email</label>
+              <div class="input" style="display:flex;align-items:center;">
+                <span class="input-placeholder">you@example.com</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Password</label>
+              <div class="input" style="display:flex;align-items:center;">
+                <span class="input-placeholder">••••••••</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Confirm password</label>
+              <div class="input" style="display:flex;align-items:center;">
+                <span class="input-placeholder">••••••••</span>
+              </div>
+            </div>
+            <button class="btn-primary">Create account</button>
+          </div>
+          <p class="auth-footer">Already have an account? <a>Sign in</a></p>
+        </div>
+      </div>
+    </div>
+    <p class="frame-label">Default — empty form</p>
+  </div>
+
+  <!-- Register: mismatch error -->
+  <div>
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="browser-dots"><span></span><span></span><span></span></div>
+        <div class="browser-url">localhost:5173/register</div>
+      </div>
+      <div class="auth-page">
+        <div class="auth-card">
+          <div class="auth-logo">llm<span class="logo-dot">·</span>eval</div>
+          <h1 class="auth-title">Create account</h1>
+          <p class="auth-sub">Register to start evaluating LLM responses</p>
+          <div class="auth-form">
+            <div class="field">
+              <label class="field-label">Email</label>
+              <div class="input" style="display:flex;align-items:center;">
+                <span style="font-size:13px;color:var(--text);">mario@example.com</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Password</label>
+              <div class="input" style="display:flex;align-items:center;">
+                <span style="font-size:14px;color:var(--text);letter-spacing:0.2em;">••••••••</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Confirm password</label>
+              <div class="input" style="display:flex;align-items:center;border-color:#FFCDD2;">
+                <span style="font-size:14px;color:var(--text);letter-spacing:0.2em;">••••••</span>
+              </div>
+            </div>
+            <p class="error-msg">Passwords do not match.</p>
+            <button class="btn-primary">Create account</button>
+          </div>
+          <p class="auth-footer">Already have an account? <a>Sign in</a></p>
+        </div>
+      </div>
+    </div>
+    <p class="frame-label">Error — password mismatch (client-side)</p>
+  </div>
+
+</div>
+
+<div class="frames" style="margin-top:32px;">
+
+  <!-- Register: submitting -->
+  <div>
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="browser-dots"><span></span><span></span><span></span></div>
+        <div class="browser-url">localhost:5173/register</div>
+      </div>
+      <div class="auth-page">
+        <div class="auth-card">
+          <div class="auth-logo">llm<span class="logo-dot">·</span>eval</div>
+          <h1 class="auth-title">Create account</h1>
+          <p class="auth-sub">Register to start evaluating LLM responses</p>
+          <div class="auth-form">
+            <div class="field">
+              <label class="field-label">Email</label>
+              <div class="input" style="display:flex;align-items:center;">
+                <span style="font-size:13px;color:var(--text);">mario@example.com</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Password</label>
+              <div class="input" style="display:flex;align-items:center;">
+                <span style="font-size:14px;color:var(--text);letter-spacing:0.2em;">••••••••</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Confirm password</label>
+              <div class="input" style="display:flex;align-items:center;">
+                <span style="font-size:14px;color:var(--text);letter-spacing:0.2em;">••••••••</span>
+              </div>
+            </div>
+            <button class="btn-primary" style="opacity:0.85;cursor:not-allowed;">
+              <span class="spinner"></span>
+              Creating account…
+            </button>
+          </div>
+          <p class="auth-footer">Already have an account? <a>Sign in</a></p>
+        </div>
+      </div>
+    </div>
+    <p class="frame-label">Submitting — spinner + auto-login</p>
+  </div>
+
+  <!-- Register: duplicate email -->
+  <div>
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="browser-dots"><span></span><span></span><span></span></div>
+        <div class="browser-url">localhost:5173/register</div>
+      </div>
+      <div class="auth-page">
+        <div class="auth-card">
+          <div class="auth-logo">llm<span class="logo-dot">·</span>eval</div>
+          <h1 class="auth-title">Create account</h1>
+          <p class="auth-sub">Register to start evaluating LLM responses</p>
+          <div class="auth-form">
+            <div class="field">
+              <label class="field-label">Email</label>
+              <div class="input" style="display:flex;align-items:center;border-color:#FFCDD2;">
+                <span style="font-size:13px;color:var(--text);">mario@example.com</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Password</label>
+              <div class="input" style="display:flex;align-items:center;">
+                <span style="font-size:14px;color:var(--text);letter-spacing:0.2em;">••••••••</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Confirm password</label>
+              <div class="input" style="display:flex;align-items:center;">
+                <span style="font-size:14px;color:var(--text);letter-spacing:0.2em;">••••••••</span>
+              </div>
+            </div>
+            <p class="error-msg">An account with that email already exists.</p>
+            <button class="btn-primary">Create account</button>
+          </div>
+          <p class="auth-footer">Already have an account? <a>Sign in</a></p>
+        </div>
+      </div>
+    </div>
+    <p class="frame-label">Error — 409 duplicate email from API</p>
+  </div>
+
+</div>
+
+</body>
+</html>
