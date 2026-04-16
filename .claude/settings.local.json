@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3:*)",
+      "Bash(pip3 install:*)",
+      "Bash(python -m pytest tests/ --cov=src --cov-report=term-missing -x -q)",
+      "Bash(command -v node)",
+      "Bash(brew list:*)",
+      "Bash(echo \"PATH=$PATH\")"
+    ]
+  }
+}

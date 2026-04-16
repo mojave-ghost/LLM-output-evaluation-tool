@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wireframe — Results Table</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: #EDEBE6;
+    min-height: 100vh;
+    padding: 32px 24px 48px;
+    color: #1A1A18;
+  }
+
+  .page-header { margin-bottom: 28px; }
+  .page-header h1 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: #6B6960; margin-bottom: 6px;
+  }
+  .page-header h2 { font-size: 20px; font-weight: 500; color: #1A1A18; letter-spacing: -0.02em; }
+  .page-header p { font-size: 12px; color: #8A8880; margin-top: 4px; font-family: 'IBM Plex Mono', monospace; }
+
+  .frames { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+
+  .frame-wrap { display: flex; flex-direction: column; gap: 10px; }
+
+  .frame-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: #8A8880; display: flex; align-items: center; gap: 8px;
+  }
+  .frame-label::after { content: ''; flex: 1; height: 1px; background: #D4D1CA; }
+  .frame-dim { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #ABAAA4; margin-top: 6px; text-align: center; }
+
+  .browser { background: #fff; border-radius: 8px; border: 1.5px solid #C8C5BE; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+
+  .browser-bar { background: #F0EEE9; border-bottom: 1px solid #D4D1CA; padding: 8px 12px; display: flex; align-items: center; gap: 10px; }
+  .browser-dots { display: flex; gap: 5px; }
+  .browser-dots span { width: 8px; height: 8px; border-radius: 50%; background: #C8C5BE; display: block; }
+  .browser-url { flex: 1; background: #E4E2DC; border-radius: 4px; height: 18px; display: flex; align-items: center; padding: 0 8px; font-family: 'IBM Plex Mono', monospace; font-size: 8.5px; color: #8A8880; }
+
+  .app { display: flex; flex-direction: column; }
+
+  .nav { background: #1A1A18; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; height: 42px; }
+  .nav-logo { font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 500; color: #EDEBE6; letter-spacing: 0.06em; }
+  .nav-logo span { color: #7F77DD; }
+  .nav-links { display: flex; gap: 20px; align-items: center; }
+  .nav-link { font-size: 10px; color: #8A8880; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.06em; }
+  .nav-link.active { color: #EDEBE6; }
+  .nav-user { width: 22px; height: 22px; border-radius: 50%; background: #3C3489; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #CECBF6; font-family: 'IBM Plex Mono', monospace; font-weight: 500; }
+
+  .page-content { padding: 16px 20px; background: #F5F3EE; }
+
+  /* ── Toolbar ── */
+  .toolbar {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 12px; flex-wrap: wrap;
+  }
+  .toolbar-left { display: flex; align-items: center; gap: 8px; flex: 1; }
+  .toolbar-right { display: flex; align-items: center; gap: 6px; }
+
+  .page-title { font-size: 14px; font-weight: 500; color: #1A1A18; letter-spacing: -0.01em; }
+  .result-count { font-family: 'IBM Plex Mono', monospace; font-size: 8.5px; color: #8A8880; background: #E4E2DC; padding: 2px 7px; border-radius: 10px; }
+
+  .filter-chip {
+    height: 24px; padding: 0 9px;
+    border: 1px solid #D4D1CA; border-radius: 12px;
+    background: #fff; display: flex; align-items: center; gap: 5px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 8px; color: #4A4A45;
+    cursor: pointer;
+  }
+  .filter-chip.active { border-color: #534AB7; background: #EEEDFE; color: #534AB7; }
+  .filter-chip .dot { width: 5px; height: 5px; border-radius: 50%; }
+
+  .search-box {
+    height: 28px; padding: 0 9px;
+    border: 1px solid #D4D1CA; border-radius: 5px;
+    background: #fff; display: flex; align-items: center; gap: 6px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 8px; color: #ABAAA4;
+    min-width: 130px;
+  }
+  .search-icon { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid #ABAAA4; position: relative; flex-shrink: 0; }
+  .search-icon::after { content: ''; position: absolute; bottom: -3px; right: -2px; width: 4px; height: 1.5px; background: #ABAAA4; transform: rotate(45deg); }
+
+  .wf-btn {
+    height: 28px; padding: 0 12px; border-radius: 5px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 8.5px; font-weight: 500;
+    letter-spacing: 0.05em; display: flex; align-items: center; gap: 5px;
+    white-space: nowrap; cursor: pointer;
+  }
+  .wf-btn.primary { background: #534AB7; color: #fff; border: none; }
+  .wf-btn.ghost { background: transparent; color: #6B6960; border: 1px solid #D4D1CA; }
+  .wf-btn.sm { height: 22px; padding: 0 8px; font-size: 7.5px; }
+
+  /* ── Filter bar ── */
+  .filter-bar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 10px; background: #fff;
+    border: 1px solid #D4D1CA; border-radius: 6px 6px 0 0;
+    border-bottom: none; flex-wrap: wrap;
+  }
+  .filter-label { font-family: 'IBM Plex Mono', monospace; font-size: 7.5px; color: #8A8880; letter-spacing: 0.06em; text-transform: uppercase; }
+  .filter-sep { width: 1px; height: 14px; background: #D4D1CA; }
+
+  .date-range {
+    display: flex; align-items: center; gap: 5px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 8px; color: #4A4A45;
+  }
+  .date-input {
+    height: 22px; padding: 0 7px;
+    border: 1px solid #D4D1CA; border-radius: 4px;
+    background: #F5F3EE; font-family: 'IBM Plex Mono', monospace;
+    font-size: 7.5px; color: #4A4A45; width: 72px;
+  }
+  .date-sep { color: #ABAAA4; font-size: 8px; }
+
+  .score-range { display: flex; align-items: center; gap: 6px; }
+  .score-range-label { font-family: 'IBM Plex Mono', monospace; font-size: 8px; color: #4A4A45; }
+  .range-track { width: 60px; height: 4px; background: #E4E2DC; border-radius: 2px; position: relative; }
+  .range-fill { position: absolute; left: 20%; right: 10%; top: 0; height: 100%; background: #534AB7; border-radius: 2px; }
+  .range-thumb { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: #534AB7; border: 1.5px solid #fff; top: -2px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+
+  .clear-filters { font-family: 'IBM Plex Mono', monospace; font-size: 7.5px; color: #ABAAA4; margin-left: auto; cursor: pointer; }
+  .clear-filters:hover { color: #D85A30; }
+
+  /* ── Table ── */
+  .table-wrap { background: #fff; border: 1px solid #D4D1CA; border-radius: 0 0 6px 6px; overflow: hidden; }
+
+  .table-head {
+    display: grid;
+    grid-template-columns: 20px 90px 1fr 1fr 72px 64px 56px 52px;
+    gap: 0; background: #F0EEE9;
+    border-bottom: 1.5px solid #D4D1CA;
+    padding: 0 10px;
+  }
+  .th {
+    padding: 7px 6px; font-family: 'IBM Plex Mono', monospace;
+    font-size: 7.5px; font-weight: 500; color: #6B6960;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    display: flex; align-items: center; gap: 3px;
+    user-select: none; cursor: pointer;
+  }
+  .th.sorted { color: #534AB7; }
+  .sort-arrow { font-size: 8px; opacity: 0.7; }
+
+  /* Table rows */
+  .table-row {
+    display: grid;
+    grid-template-columns: 20px 90px 1fr 1fr 72px 64px 56px 52px;
+    gap: 0; padding: 0 10px;
+    border-bottom: 1px solid #EDEBE6;
+    transition: background 0.1s;
+    cursor: pointer;
+  }
+  .table-row:last-child { border-bottom: none; }
+  .table-row:hover { background: #F5F3EE; }
+  .table-row.selected { background: #EEEDFE; }
+
+  .td {
+    padding: 8px 6px; font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px; color: #4A4A45;
+    display: flex; align-items: center; overflow: hidden;
+  }
+  .td-truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* Checkbox */
+  .td-check { justify-content: center; }
+  .wf-checkbox { width: 11px; height: 11px; border: 1.5px solid #C8C5BE; border-radius: 2px; background: #fff; }
+  .wf-checkbox.checked { background: #534AB7; border-color: #534AB7; position: relative; }
+  .wf-checkbox.checked::after { content: ''; position: absolute; left: 2px; top: 0px; width: 4px; height: 7px; border-right: 1.5px solid white; border-bottom: 1.5px solid white; transform: rotate(40deg); }
+
+  /* Job ID */
+  .job-id { font-family: 'IBM Plex Mono', monospace; font-size: 7.5px; color: #534AB7; }
+
+  /* Status badge */
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 6px; border-radius: 10px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 7px; font-weight: 500;
+  }
+  .status-dot { width: 5px; height: 5px; border-radius: 50%; }
+  .badge-completed { background: #E1F5EE; color: #0F6E56; }
+  .badge-completed .status-dot { background: #1D9E75; }
+  .badge-processing { background: #FAEEDA; color: #854F0B; }
+  .badge-processing .status-dot { background: #EF9F27; animation: pulse 1.2s ease-in-out infinite; }
+  .badge-queued { background: #EEEDFE; color: #534AB7; }
+  .badge-queued .status-dot { background: #7F77DD; }
+  .badge-failed { background: #FCEBEB; color: #A32D2D; }
+  .badge-failed .status-dot { background: #E24B4A; }
+  .badge-cached { background: #E1F5EE; color: #085041; }
+  .badge-cached .status-dot { background: #5DCAA5; }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* Score dots visualization */
+  .score-dots { display: flex; gap: 2px; align-items: center; }
+  .score-dot { width: 7px; height: 7px; border-radius: 50%; }
+  .score-dot.filled { background: #534AB7; }
+  .score-dot.half { background: #AFA9EC; }
+  .score-dot.empty { background: #E4E2DC; border: 1px solid #D4D1CA; }
+
+  .composite-score { font-size: 9px; font-weight: 500; color: #1A1A18; }
+  .composite-score.high { color: #0F6E56; }
+  .composite-score.mid { color: #854F0B; }
+  .composite-score.low { color: #A32D2D; }
+
+  /* Row action */
+  .row-action {
+    display: flex; align-items: center; justify-content: flex-end;
+  }
+  .row-chevron { color: #ABAAA4; font-size: 10px; }
+
+  /* ── Pagination ── */
+  .pagination {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 10px; border-top: 1px solid #D4D1CA;
+    background: #F0EEE9;
+  }
+  .page-info { font-family: 'IBM Plex Mono', monospace; font-size: 8px; color: #8A8880; }
+  .page-controls { display: flex; gap: 4px; align-items: center; }
+  .page-btn {
+    width: 22px; height: 22px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'IBM Plex Mono', monospace; font-size: 8px; color: #4A4A45;
+    border: 1px solid #D4D1CA; background: #fff; cursor: pointer;
+  }
+  .page-btn.active { background: #534AB7; color: #fff; border-color: #534AB7; }
+  .page-btn.disabled { opacity: 0.4; cursor: default; }
+  .page-size { font-family: 'IBM Plex Mono', monospace; font-size: 8px; color: #8A8880; display: flex; align-items: center; gap: 4px; }
+  .page-size-select { border: 1px solid #D4D1CA; border-radius: 3px; background: #fff; padding: 2px 4px; font-family: 'IBM Plex Mono', monospace; font-size: 7.5px; color: #4A4A45; }
+
+  /* ── Status bar ── */
+  .status-bar { background: #F0EEE9; border-top: 1px solid #D4D1CA; padding: 5px 16px; display: flex; align-items: center; justify-content: space-between; }
+  .status-indicator { display: flex; align-items: center; gap: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 7.5px; color: #8A8880; }
+  .status-dot-green { width: 5px; height: 5px; border-radius: 50%; background: #1D9E75; }
+
+  /* ── Bulk action bar (appears on row select) ── */
+  .bulk-bar {
+    display: flex; align-items: center; gap: 10px;
+    padding: 6px 10px; background: #EEEDFE;
+    border-bottom: 1px solid #AFA9EC;
+  }
+  .bulk-count { font-family: 'IBM Plex Mono', monospace; font-size: 8px; color: #534AB7; font-weight: 500; }
+  .bulk-actions { display: flex; gap: 6px; margin-left: auto; }
+
+  /* ── Annotations ── */
+  .annotations { margin-top: 14px; display: flex; flex-direction: column; gap: 5px; }
+  .annotation { display: flex; align-items: flex-start; gap: 7px; font-family: 'IBM Plex Mono', monospace; font-size: 8px; color: #6B6960; line-height: 1.4; }
+  .ann-num { width: 14px; height: 14px; border-radius: 50%; background: #1A1A18; color: #EDEBE6; font-size: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+  /* ── Tablet overrides ── */
+  .tablet .page-content { padding: 12px 14px; }
+  .tablet .nav { padding: 0 14px; }
+  .tablet .nav-link:not(.active) { display: none; }
+
+  .tablet .table-head {
+    grid-template-columns: 20px 80px 1fr 56px 52px 40px;
+  }
+  .tablet .table-row {
+    grid-template-columns: 20px 80px 1fr 56px 52px 40px;
+  }
+  .tablet .th.hide-tablet,
+  .tablet .td.hide-tablet { display: none; }
+
+  .tablet .filter-bar { flex-wrap: wrap; gap: 6px; }
+  .tablet .toolbar { gap: 6px; }
+
+  /* ── Legend ── */
+  .legend { margin-top: 18px; padding: 12px 14px; background: #fff; border: 1px solid #D4D1CA; border-radius: 6px; }
+  .legend-title { font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 500; color: #4A4A45; letter-spacing: 0.06em; margin-bottom: 10px; text-transform: uppercase; }
+  .legend-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px 20px; }
+  .legend-item { display: flex; align-items: center; gap: 7px; font-family: 'IBM Plex Mono', monospace; font-size: 8px; color: #6B6960; }
+  .legend-swatch { width: 32px; height: 12px; border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 6px; font-weight: 500; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>LLM Eval Tool · Phase 2: Design · Wireframe 02 of 04</h1>
+  <h2>Results Table</h2>
+  <p>medium fidelity · desktop (1280px) + tablet (768px) · both viewports</p>
+</div>
+
+<div class="frames">
+
+  <!-- ══════════════════════════════════════════
+       DESKTOP
+  ══════════════════════════════════════════ -->
+  <div class="frame-wrap">
+    <div class="frame-label">Desktop — 1280px</div>
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="browser-dots"><span></span><span></span><span></span></div>
+        <div class="browser-url">evaltools.dev/results</div>
+      </div>
+      <div class="app">
+
+        <div class="nav">
+          <div class="nav-logo">eval<span>.</span>tool</div>
+          <div class="nav-links">
+            <div class="nav-link">submit</div>
+            <div class="nav-link active">results</div>
+            <div class="nav-link">dashboard</div>
+            <div class="nav-link">rubrics</div>
+            <div class="nav-user">MR</div>
+          </div>
+        </div>
+
+        <div class="page-content">
+
+          <!-- Toolbar -->
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <div class="page-title">Results</div>
+              <div class="result-count">247 jobs</div>
+            </div>
+            <div class="toolbar-right">
+              <div class="search-box">
+                <div class="search-icon"></div>
+                search job ID or prompt...
+              </div>
+              <div class="wf-btn ghost">export CSV</div>
+              <div class="wf-btn primary">+ new job</div>
+            </div>
+          </div>
+
+          <!-- Filter bar -->
+          <div class="filter-bar">
+            <div class="filter-label">filter</div>
+            <div class="filter-sep"></div>
+
+            <!-- Status filters -->
+            <div class="filter-chip active">
+              <div class="dot" style="background:#1D9E75"></div>completed
+            </div>
+            <div class="filter-chip">
+              <div class="dot" style="background:#7F77DD"></div>queued
+            </div>
+            <div class="filter-chip">
+              <div class="dot" style="background:#EF9F27"></div>processing
+            </div>
+            <div class="filter-chip">
+              <div class="dot" style="background:#E24B4A"></div>failed
+            </div>
+
+            <div class="filter-sep"></div>
+
+            <!-- Rubric filter -->
+            <div class="filter-chip">rubric: all ▾</div>
+
+            <div class="filter-sep"></div>
+
+            <!-- Date range -->
+            <div class="date-range">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:#8A8880;">date</span>
+              <div class="date-input">2026-01-01</div>
+              <div class="date-sep">→</div>
+              <div class="date-input">2026-04-14</div>
+            </div>
+
+            <div class="filter-sep"></div>
+
+            <!-- Score range -->
+            <div class="score-range">
+              <div class="score-range-label" style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:#8A8880;">score</div>
+              <div class="range-track">
+                <div class="range-fill"></div>
+                <div class="range-thumb" style="left:18%"></div>
+                <div class="range-thumb" style="right:8%"></div>
+              </div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:#4A4A45;">1.0 – 4.8</div>
+            </div>
+
+            <div class="clear-filters">clear filters ✕</div>
+          </div>
+
+          <!-- Bulk action bar (1 row selected) -->
+          <div class="bulk-bar">
+            <div class="wf-checkbox checked"></div>
+            <div class="bulk-count">1 selected</div>
+            <div class="bulk-actions">
+              <div class="wf-btn ghost sm">view detail</div>
+              <div class="wf-btn ghost sm" style="color:#A32D2D;border-color:#F09595;">delete</div>
+            </div>
+          </div>
+
+          <!-- Table -->
+          <div class="table-wrap">
+            <div class="table-head">
+              <div class="th"><div class="wf-checkbox"></div></div>
+              <div class="th">job id</div>
+              <div class="th">prompt preview</div>
+              <div class="th">rubric</div>
+              <div class="th sorted">score ↓ <span class="sort-arrow"></span></div>
+              <div class="th">status</div>
+              <div class="th">submitted</div>
+              <div class="th"></div>
+            </div>
+
+            <!-- Row 1 — selected, completed, high score -->
+            <div class="table-row selected">
+              <div class="td td-check"><div class="wf-checkbox checked"></div></div>
+              <div class="td"><span class="job-id">a3f8c1d2</span></div>
+              <div class="td td-truncate" style="font-size:8px;color:#4A4A45;">Explain the difference between supervised and unsupervised learning in...</div>
+              <div class="td td-truncate" style="font-size:8px;color:#6B6960;">Default</div>
+              <div class="td">
+                <div style="display:flex;flex-direction:column;gap:2px;">
+                  <div class="composite-score high">4.6</div>
+                  <div class="score-dots">
+                    <div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot half"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="td"><div class="status-badge badge-completed"><div class="status-dot"></div>completed</div></div>
+              <div class="td" style="font-size:7.5px;color:#8A8880;">2h ago</div>
+              <div class="td row-action"><span class="row-chevron">›</span></div>
+            </div>
+
+            <!-- Row 2 — completed, mid score -->
+            <div class="table-row">
+              <div class="td td-check"><div class="wf-checkbox"></div></div>
+              <div class="td"><span class="job-id">b7e2a904</span></div>
+              <div class="td td-truncate" style="font-size:8px;color:#4A4A45;">What are the main advantages of using a transformer architecture over RNNs...</div>
+              <div class="td td-truncate" style="font-size:8px;color:#6B6960;">Default</div>
+              <div class="td">
+                <div style="display:flex;flex-direction:column;gap:2px;">
+                  <div class="composite-score mid">3.1</div>
+                  <div class="score-dots">
+                    <div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot empty"></div><div class="score-dot empty"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="td"><div class="status-badge badge-completed"><div class="status-dot"></div>completed</div></div>
+              <div class="td" style="font-size:7.5px;color:#8A8880;">4h ago</div>
+              <div class="td row-action"><span class="row-chevron">›</span></div>
+            </div>
+
+            <!-- Row 3 — processing -->
+            <div class="table-row">
+              <div class="td td-check"><div class="wf-checkbox"></div></div>
+              <div class="td"><span class="job-id">c1d4f623</span></div>
+              <div class="td td-truncate" style="font-size:8px;color:#4A4A45;">Summarise the key findings from this clinical trial report including...</div>
+              <div class="td td-truncate" style="font-size:8px;color:#6B6960;">Faithfulness-heavy</div>
+              <div class="td">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:7.5px;color:#ABAAA4;">—</div>
+              </div>
+              <div class="td"><div class="status-badge badge-processing"><div class="status-dot"></div>processing</div></div>
+              <div class="td" style="font-size:7.5px;color:#8A8880;">6m ago</div>
+              <div class="td row-action"><span class="row-chevron">›</span></div>
+            </div>
+
+            <!-- Row 4 — queued -->
+            <div class="table-row">
+              <div class="td td-check"><div class="wf-checkbox"></div></div>
+              <div class="td"><span class="job-id">d9b3e217</span></div>
+              <div class="td td-truncate" style="font-size:8px;color:#4A4A45;">Write a Python function that implements binary search on a sorted...</div>
+              <div class="td td-truncate" style="font-size:8px;color:#6B6960;">Default</div>
+              <div class="td">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:7.5px;color:#ABAAA4;">—</div>
+              </div>
+              <div class="td"><div class="status-badge badge-queued"><div class="status-dot"></div>queued</div></div>
+              <div class="td" style="font-size:7.5px;color:#8A8880;">2m ago</div>
+              <div class="td row-action"><span class="row-chevron">›</span></div>
+            </div>
+
+            <!-- Row 5 — cached -->
+            <div class="table-row">
+              <div class="td td-check"><div class="wf-checkbox"></div></div>
+              <div class="td"><span class="job-id">e4c7a108</span></div>
+              <div class="td td-truncate" style="font-size:8px;color:#4A4A45;">Explain the difference between supervised and unsupervised learning in...</div>
+              <div class="td td-truncate" style="font-size:8px;color:#6B6960;">Default</div>
+              <div class="td">
+                <div style="display:flex;flex-direction:column;gap:2px;">
+                  <div class="composite-score high">4.6</div>
+                  <div class="score-dots">
+                    <div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot half"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="td"><div class="status-badge badge-cached"><div class="status-dot"></div>cached</div></div>
+              <div class="td" style="font-size:7.5px;color:#8A8880;">1m ago</div>
+              <div class="td row-action"><span class="row-chevron">›</span></div>
+            </div>
+
+            <!-- Row 6 — failed -->
+            <div class="table-row">
+              <div class="td td-check"><div class="wf-checkbox"></div></div>
+              <div class="td"><span class="job-id">f2a9d541</span></div>
+              <div class="td td-truncate" style="font-size:8px;color:#4A4A45;">Describe the ethical implications of large-scale language model deployment...</div>
+              <div class="td td-truncate" style="font-size:8px;color:#6B6960;">Default</div>
+              <div class="td">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:7.5px;color:#E24B4A;">failed</div>
+              </div>
+              <div class="td"><div class="status-badge badge-failed"><div class="status-dot"></div>failed ×3</div></div>
+              <div class="td" style="font-size:7.5px;color:#8A8880;">yesterday</div>
+              <div class="td row-action"><span class="row-chevron">›</span></div>
+            </div>
+
+          </div><!-- /table-wrap -->
+
+          <!-- Pagination -->
+          <div class="pagination">
+            <div class="page-info">showing 1–6 of 247 results</div>
+            <div class="page-controls">
+              <div class="page-btn disabled">‹</div>
+              <div class="page-btn active">1</div>
+              <div class="page-btn">2</div>
+              <div class="page-btn">3</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:#ABAAA4;padding:0 4px;">…</div>
+              <div class="page-btn">25</div>
+              <div class="page-btn">›</div>
+            </div>
+            <div class="page-size">
+              rows per page
+              <div class="page-size-select">10 ▾</div>
+            </div>
+          </div>
+
+        </div><!-- /page-content -->
+
+        <div class="status-bar">
+          <div class="status-indicator"><div class="status-dot-green"></div>API connected · queue depth: 3</div>
+          <div class="status-indicator">last eval: 6m ago</div>
+        </div>
+
+      </div>
+    </div>
+    <div class="frame-dim">1280 × 860 · Chrome · 100%</div>
+
+    <div class="annotations">
+      <div class="annotation"><div class="ann-num">1</div>Filter bar: status chips are multi-select toggles. Rubric chip opens a dropdown of saved rubrics. Date inputs are native date pickers. Score range uses a dual-handle slider (1.0–5.0).</div>
+      <div class="annotation"><div class="ann-num">2</div>Bulk action bar slides in above the table when any row checkbox is selected. Replaces the filter bar row to preserve vertical space.</div>
+      <div class="annotation"><div class="ann-num">3</div>Score column: composite shown as a number + 5-dot row. Dots are filled (purple), half-filled (light purple), or empty (gray). Processing/queued rows show a dash — score not yet available.</div>
+      <div class="annotation"><div class="ann-num">4</div>Status badges are color-coded per the design tokens. "failed ×3" badge shows retry exhaustion inline. "cached" badge means result was returned from dedup cache — identical score to an earlier job.</div>
+      <div class="annotation"><div class="ann-num">5</div>Clicking any row (not the checkbox) opens the Result Detail View. Chevron › reinforces this. Rows are keyboard-navigable (↑↓ to move, Enter to open).</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TABLET
+  ══════════════════════════════════════════ -->
+  <div class="frame-wrap">
+    <div class="frame-label">Tablet — 768px</div>
+    <div class="browser tablet">
+      <div class="browser-bar">
+        <div class="browser-dots"><span></span><span></span><span></span></div>
+        <div class="browser-url">evaltools.dev/results</div>
+      </div>
+      <div class="app">
+
+        <div class="nav">
+          <div class="nav-logo">eval<span>.</span>tool</div>
+          <div class="nav-links">
+            <div class="nav-link active">results</div>
+            <div class="nav-user">MR</div>
+          </div>
+        </div>
+
+        <div class="page-content">
+
+          <!-- Toolbar -->
+          <div class="toolbar" style="flex-wrap:wrap;gap:6px;">
+            <div class="toolbar-left">
+              <div class="page-title">Results</div>
+              <div class="result-count">247</div>
+            </div>
+            <div class="toolbar-right">
+              <div class="search-box" style="min-width:100px;">
+                <div class="search-icon"></div>
+                search...
+              </div>
+              <div class="wf-btn ghost">CSV</div>
+              <div class="wf-btn primary">+</div>
+            </div>
+          </div>
+
+          <!-- Condensed filter bar -->
+          <div class="filter-bar" style="gap:5px;">
+            <div class="filter-chip active" style="font-size:7.5px;"><div class="dot" style="background:#1D9E75"></div>completed</div>
+            <div class="filter-chip" style="font-size:7.5px;"><div class="dot" style="background:#7F77DD"></div>queued</div>
+            <div class="filter-chip" style="font-size:7.5px;"><div class="dot" style="background:#EF9F27"></div>processing</div>
+            <div class="filter-chip" style="font-size:7.5px;"><div class="dot" style="background:#E24B4A"></div>failed</div>
+            <div class="filter-chip" style="font-size:7.5px;">rubric ▾</div>
+            <div class="filter-chip" style="font-size:7.5px;">date ▾</div>
+            <div class="filter-chip" style="font-size:7.5px;">score ▾</div>
+          </div>
+
+          <!-- Bulk bar -->
+          <div class="bulk-bar">
+            <div class="wf-checkbox checked"></div>
+            <div class="bulk-count">1 selected</div>
+            <div class="bulk-actions">
+              <div class="wf-btn ghost sm">view</div>
+              <div class="wf-btn ghost sm" style="color:#A32D2D;border-color:#F09595;">delete</div>
+            </div>
+          </div>
+
+          <!-- Table — 6 columns on tablet (hide rubric + submitted cols) -->
+          <div class="table-wrap">
+            <div class="table-head" style="grid-template-columns:20px 72px 1fr 56px 52px 28px;">
+              <div class="th"><div class="wf-checkbox"></div></div>
+              <div class="th">job id</div>
+              <div class="th">prompt</div>
+              <div class="th sorted">score ↓</div>
+              <div class="th">status</div>
+              <div class="th"></div>
+            </div>
+
+            <!-- Row 1 -->
+            <div class="table-row" style="grid-template-columns:20px 72px 1fr 56px 52px 28px;">
+              <div class="td td-check"><div class="wf-checkbox checked"></div></div>
+              <div class="td"><span class="job-id" style="font-size:7px;">a3f8c1d2</span></div>
+              <div class="td td-truncate" style="font-size:7.5px;color:#4A4A45;">Explain the difference between supervised and...</div>
+              <div class="td">
+                <div style="display:flex;flex-direction:column;gap:2px;">
+                  <div class="composite-score high" style="font-size:8.5px;">4.6</div>
+                  <div class="score-dots">
+                    <div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot half"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="td"><div class="status-badge badge-completed" style="font-size:6.5px;padding:2px 5px;"><div class="status-dot"></div>done</div></div>
+              <div class="td row-action"><span class="row-chevron">›</span></div>
+            </div>
+
+            <!-- Row 2 -->
+            <div class="table-row" style="grid-template-columns:20px 72px 1fr 56px 52px 28px;">
+              <div class="td td-check"><div class="wf-checkbox"></div></div>
+              <div class="td"><span class="job-id" style="font-size:7px;">b7e2a904</span></div>
+              <div class="td td-truncate" style="font-size:7.5px;color:#4A4A45;">What are the main advantages of transformer...</div>
+              <div class="td">
+                <div style="display:flex;flex-direction:column;gap:2px;">
+                  <div class="composite-score mid" style="font-size:8.5px;">3.1</div>
+                  <div class="score-dots">
+                    <div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot empty"></div><div class="score-dot empty"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="td"><div class="status-badge badge-completed" style="font-size:6.5px;padding:2px 5px;"><div class="status-dot"></div>done</div></div>
+              <div class="td row-action"><span class="row-chevron">›</span></div>
+            </div>
+
+            <!-- Row 3 — processing -->
+            <div class="table-row" style="grid-template-columns:20px 72px 1fr 56px 52px 28px;">
+              <div class="td td-check"><div class="wf-checkbox"></div></div>
+              <div class="td"><span class="job-id" style="font-size:7px;">c1d4f623</span></div>
+              <div class="td td-truncate" style="font-size:7.5px;color:#4A4A45;">Summarise the key findings from this clinical...</div>
+              <div class="td"><div style="font-family:'IBM Plex Mono',monospace;font-size:7px;color:#ABAAA4;">—</div></div>
+              <div class="td"><div class="status-badge badge-processing" style="font-size:6.5px;padding:2px 5px;"><div class="status-dot"></div>running</div></div>
+              <div class="td row-action"><span class="row-chevron">›</span></div>
+            </div>
+
+            <!-- Row 4 — queued -->
+            <div class="table-row" style="grid-template-columns:20px 72px 1fr 56px 52px 28px;">
+              <div class="td td-check"><div class="wf-checkbox"></div></div>
+              <div class="td"><span class="job-id" style="font-size:7px;">d9b3e217</span></div>
+              <div class="td td-truncate" style="font-size:7.5px;color:#4A4A45;">Write a Python function that implements binary...</div>
+              <div class="td"><div style="font-family:'IBM Plex Mono',monospace;font-size:7px;color:#ABAAA4;">—</div></div>
+              <div class="td"><div class="status-badge badge-queued" style="font-size:6.5px;padding:2px 5px;"><div class="status-dot"></div>queued</div></div>
+              <div class="td row-action"><span class="row-chevron">›</span></div>
+            </div>
+
+            <!-- Row 5 — failed -->
+            <div class="table-row" style="grid-template-columns:20px 72px 1fr 56px 52px 28px;">
+              <div class="td td-check"><div class="wf-checkbox"></div></div>
+              <div class="td"><span class="job-id" style="font-size:7px;">f2a9d541</span></div>
+              <div class="td td-truncate" style="font-size:7.5px;color:#4A4A45;">Describe the ethical implications of large-scale...</div>
+              <div class="td"><div style="font-family:'IBM Plex Mono',monospace;font-size:7px;color:#E24B4A;">—</div></div>
+              <div class="td"><div class="status-badge badge-failed" style="font-size:6.5px;padding:2px 5px;"><div class="status-dot"></div>failed</div></div>
+              <div class="td row-action"><span class="row-chevron">›</span></div>
+            </div>
+
+          </div>
+
+          <!-- Pagination condensed -->
+          <div class="pagination" style="flex-wrap:wrap;gap:6px;">
+            <div class="page-info">1–5 of 247</div>
+            <div class="page-controls">
+              <div class="page-btn disabled">‹</div>
+              <div class="page-btn active">1</div>
+              <div class="page-btn">2</div>
+              <div class="page-btn">3</div>
+              <div class="page-btn">›</div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="status-bar">
+          <div class="status-indicator"><div class="status-dot-green"></div>connected</div>
+          <div class="status-indicator">queue: 3</div>
+        </div>
+
+      </div>
+    </div>
+    <div class="frame-dim">768 × 860 · Chrome · 100%</div>
+
+    <div class="annotations">
+      <div class="annotation"><div class="ann-num">A</div>Filter bar collapses on tablet: date and score filters move into a "date ▾" and "score ▾" chip that open a popover. Status chips remain visible as they are the primary filter.</div>
+      <div class="annotation"><div class="ann-num">B</div>Table drops rubric and submitted columns at 768px. Job ID truncates to 8 chars. Status labels shorten: "completed" → "done", "processing" → "running".</div>
+      <div class="annotation"><div class="ann-num">C</div>Pagination strips page-size selector. Ellipsis and far pages hidden — only prev / 1 / 2 / 3 / next shown.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Legend ── -->
+<div class="legend">
+  <div class="legend-title">Status badge tokens</div>
+  <div class="legend-grid">
+    <div class="legend-item"><div class="status-badge badge-completed" style="font-size:7.5px;"><div class="status-dot"></div>completed</div>Teal — eval done</div>
+    <div class="legend-item"><div class="status-badge badge-processing" style="font-size:7.5px;"><div class="status-dot"></div>processing</div>Amber — Claude scoring</div>
+    <div class="legend-item"><div class="status-badge badge-queued" style="font-size:7.5px;"><div class="status-dot"></div>queued</div>Purple — in heap</div>
+    <div class="legend-item"><div class="status-badge badge-failed" style="font-size:7.5px;"><div class="status-dot"></div>failed ×3</div>Red — retries exhausted</div>
+    <div class="legend-item"><div class="status-badge badge-cached" style="font-size:7.5px;"><div class="status-dot"></div>cached</div>Teal dark — dedup hit</div>
+    <div class="legend-item" style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:#6B6960;">
+      <div class="score-dots" style="gap:3px;"><div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot half"></div><div class="score-dot empty"></div><div class="score-dot empty"></div></div>
+      score dots · filled / half / empty
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

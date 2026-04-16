@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wireframe — Result Detail View</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: #EDEBE6;
+    min-height: 100vh;
+    padding: 32px 24px 48px;
+    color: #1A1A18;
+  }
+
+  .page-header { margin-bottom: 28px; }
+  .page-header h1 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: #6B6960; margin-bottom: 6px;
+  }
+  .page-header h2 { font-size: 20px; font-weight: 500; color: #1A1A18; letter-spacing: -0.02em; }
+  .page-header p { font-size: 12px; color: #8A8880; margin-top: 4px; font-family: 'IBM Plex Mono', monospace; }
+
+  .frames { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+  .frame-wrap { display: flex; flex-direction: column; gap: 10px; }
+  .frame-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: #8A8880; display: flex; align-items: center; gap: 8px;
+  }
+  .frame-label::after { content: ''; flex: 1; height: 1px; background: #D4D1CA; }
+  .frame-dim { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #ABAAA4; margin-top: 6px; text-align: center; }
+
+  .browser { background: #fff; border-radius: 8px; border: 1.5px solid #C8C5BE; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+  .browser-bar { background: #F0EEE9; border-bottom: 1px solid #D4D1CA; padding: 8px 12px; display: flex; align-items: center; gap: 10px; }
+  .browser-dots { display: flex; gap: 5px; }
+  .browser-dots span { width: 8px; height: 8px; border-radius: 50%; background: #C8C5BE; display: block; }
+  .browser-url { flex: 1; background: #E4E2DC; border-radius: 4px; height: 18px; display: flex; align-items: center; padding: 0 8px; font-family: 'IBM Plex Mono', monospace; font-size: 8.5px; color: #8A8880; }
+
+  .app { display: flex; flex-direction: column; }
+  .nav { background: #1A1A18; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; height: 42px; }
+  .nav-logo { font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 500; color: #EDEBE6; letter-spacing: 0.06em; }
+  .nav-logo span { color: #7F77DD; }
+  .nav-links { display: flex; gap: 20px; align-items: center; }
+  .nav-link { font-size: 10px; color: #8A8880; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.06em; }
+  .nav-link.active { color: #EDEBE6; }
+  .nav-user { width: 22px; height: 22px; border-radius: 50%; background: #3C3489; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #CECBF6; font-family: 'IBM Plex Mono', monospace; font-weight: 500; }
+
+  /* ── Breadcrumb ── */
+  .breadcrumb {
+    padding: 8px 20px;
+    background: #F0EEE9;
+    border-bottom: 1px solid #D4D1CA;
+    display: flex; align-items: center; gap: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px; color: #8A8880;
+  }
+  .breadcrumb .crumb-link { color: #534AB7; cursor: pointer; }
+  .breadcrumb .sep { color: #C8C5BE; }
+  .breadcrumb .current { color: #4A4A45; }
+
+  .page-content { padding: 16px 20px; background: #F5F3EE; }
+
+  /* ── Page header row ── */
+  .detail-header {
+    display: flex; align-items: flex-start;
+    justify-content: space-between; gap: 12px;
+    margin-bottom: 14px;
+  }
+  .detail-header-left { display: flex; flex-direction: column; gap: 4px; }
+  .detail-title { font-size: 14px; font-weight: 500; color: #1A1A18; letter-spacing: -0.01em; }
+  .detail-meta {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 8px; color: #8A8880;
+  }
+  .meta-sep { color: #D4D1CA; }
+
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 7px; border-radius: 10px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 7px; font-weight: 500;
+  }
+  .status-dot { width: 5px; height: 5px; border-radius: 50%; }
+  .badge-completed { background: #E1F5EE; color: #0F6E56; }
+  .badge-completed .status-dot { background: #1D9E75; }
+
+  .header-actions { display: flex; gap: 6px; }
+  .wf-btn {
+    height: 26px; padding: 0 10px; border-radius: 5px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 8px; font-weight: 500;
+    letter-spacing: 0.04em; display: flex; align-items: center; gap: 5px;
+    white-space: nowrap; cursor: pointer;
+  }
+  .wf-btn.ghost { background: transparent; color: #6B6960; border: 1px solid #D4D1CA; }
+  .wf-btn.primary { background: #534AB7; color: #fff; border: none; }
+
+  /* ── Two-column layout ── */
+  .detail-body {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 14px;
+    align-items: start;
+  }
+  .detail-main { display: flex; flex-direction: column; gap: 12px; }
+  .detail-sidebar { display: flex; flex-direction: column; gap: 12px; }
+
+  /* ── Cards ── */
+  .card {
+    background: #fff;
+    border: 1px solid #D4D1CA;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 9px 14px;
+    border-bottom: 1px solid #EDEBE6;
+    display: flex; align-items: center; justify-content: space-between;
+    background: #FAFAF8;
+  }
+  .card-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: #6B6960;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .card-title-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+  }
+  .card-body { padding: 12px 14px; }
+
+  /* ── Composite score hero ── */
+  .score-hero {
+    display: flex; align-items: center; gap: 20px;
+    padding: 14px 16px;
+  }
+  .score-big {
+    font-size: 44px; font-weight: 300;
+    letter-spacing: -0.04em; color: #0F6E56;
+    line-height: 1; font-family: 'IBM Plex Sans', sans-serif;
+  }
+  .score-big .score-denom {
+    font-size: 18px; color: #ABAAA4; font-weight: 300;
+  }
+  .score-hero-right { flex: 1; }
+  .score-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px; color: #8A8880;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+
+  /* Dimension score bars */
+  .dim-rows { display: flex; flex-direction: column; gap: 7px; }
+  .dim-row { display: flex; align-items: center; gap: 8px; }
+  .dim-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px; color: #4A4A45;
+    width: 76px; flex-shrink: 0;
+  }
+  .dim-track {
+    flex: 1; height: 6px; background: #EDEBE6;
+    border-radius: 3px; overflow: hidden;
+  }
+  .dim-fill { height: 100%; border-radius: 3px; }
+  .fill-correctness { background: #534AB7; }
+  .fill-relevance   { background: #0F6E56; }
+  .fill-faithfulness{ background: #185FA5; }
+  .dim-score-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; font-weight: 500;
+    color: #1A1A18; width: 20px; text-align: right;
+  }
+  .dim-weight-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 7px; color: #ABAAA4;
+    width: 24px; text-align: right;
+  }
+
+  /* ── Dimension rationale cards ── */
+  .rationale-card {
+    background: #fff;
+    border: 1px solid #D4D1CA;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .rationale-header {
+    padding: 8px 14px;
+    border-bottom: 1px solid #EDEBE6;
+    display: flex; align-items: center; gap: 8px;
+    background: #FAFAF8;
+  }
+  .rationale-dim-name {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; font-weight: 500; color: #1A1A18;
+    flex: 1;
+  }
+  .rationale-score-pill {
+    display: flex; align-items: center; gap: 5px;
+    padding: 3px 8px; border-radius: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; font-weight: 500;
+  }
+  .pill-correctness  { background: #EEEDFE; color: #534AB7; }
+  .pill-relevance    { background: #E1F5EE; color: #0F6E56; }
+  .pill-faithfulness { background: #E6F1FB; color: #185FA5; }
+
+  .score-pip-row { display: flex; gap: 3px; }
+  .score-pip { width: 9px; height: 9px; border-radius: 50%; }
+  .pip-filled-c  { background: #534AB7; }
+  .pip-filled-r  { background: #1D9E75; }
+  .pip-filled-f  { background: #378ADD; }
+  .pip-empty     { background: #E4E2DC; border: 1px solid #D4D1CA; }
+
+  .rationale-body { padding: 10px 14px; }
+  .rationale-text {
+    font-size: 8px; color: #4A4A45; line-height: 1.7;
+    font-family: 'IBM Plex Sans', sans-serif;
+  }
+  .rationale-text strong { color: #1A1A18; font-weight: 500; }
+
+  /* ── Prompt / Response cards ── */
+  .text-block {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px; color: #4A4A45;
+    background: #F5F3EE;
+    border: 1px solid #EDEBE6;
+    border-radius: 5px;
+    padding: 9px 10px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .text-block.response { max-height: 80px; overflow: hidden; position: relative; }
+  .text-fade {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 28px;
+    background: linear-gradient(transparent, #F5F3EE);
+  }
+  .expand-link {
+    font-family: 'IBM Plex Mono', monospace; font-size: 7.5px;
+    color: #534AB7; cursor: pointer; margin-top: 5px;
+    display: inline-block;
+  }
+
+  /* ── Sidebar: metadata ── */
+  .meta-table { display: flex; flex-direction: column; gap: 0; }
+  .meta-row {
+    display: flex; align-items: flex-start;
+    padding: 6px 0;
+    border-bottom: 1px solid #EDEBE6;
+    gap: 8px;
+  }
+  .meta-row:last-child { border-bottom: none; }
+  .meta-key {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 7.5px; color: #8A8880;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    width: 70px; flex-shrink: 0; padding-top: 1px;
+  }
+  .meta-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px; color: #4A4A45;
+    word-break: break-all; line-height: 1.4;
+  }
+  .meta-val.mono-id { font-size: 7px; color: #534AB7; }
+  .hash-preview {
+    display: flex; align-items: center; gap: 4px;
+  }
+  .hash-text { font-size: 7px; color: #534AB7; }
+  .hash-copy {
+    font-size: 7px; color: #ABAAA4; cursor: pointer;
+    padding: 1px 4px; border: 1px solid #D4D1CA;
+    border-radius: 3px; background: #F5F3EE;
+  }
+
+  /* ── Sidebar: navigation ── */
+  .nav-card-body {
+    display: flex; gap: 6px; padding: 10px 14px;
+  }
+  .nav-job-btn {
+    flex: 1; height: 28px; border-radius: 5px;
+    border: 1px solid #D4D1CA; background: #F5F3EE;
+    display: flex; align-items: center; justify-content: center; gap: 4px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 8px; color: #4A4A45;
+    cursor: pointer;
+  }
+  .nav-job-btn.disabled { opacity: 0.35; cursor: default; }
+
+  /* ── Sidebar: rubric weight mini ── */
+  .rubric-mini { display: flex; flex-direction: column; gap: 6px; padding: 10px 14px; }
+  .rubric-mini-name {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8.5px; font-weight: 500; color: #1A1A18;
+    margin-bottom: 2px;
+  }
+
+  /* ── Status bar ── */
+  .status-bar { background: #F0EEE9; border-top: 1px solid #D4D1CA; padding: 5px 16px; display: flex; align-items: center; justify-content: space-between; }
+  .status-indicator { display: flex; align-items: center; gap: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 7.5px; color: #8A8880; }
+  .status-dot-green { width: 5px; height: 5px; border-radius: 50%; background: #1D9E75; }
+
+  /* ── Annotations ── */
+  .annotations { margin-top: 14px; display: flex; flex-direction: column; gap: 5px; }
+  .annotation { display: flex; align-items: flex-start; gap: 7px; font-family: 'IBM Plex Mono', monospace; font-size: 8px; color: #6B6960; line-height: 1.4; }
+  .ann-num { width: 14px; height: 14px; border-radius: 50%; background: #1A1A18; color: #EDEBE6; font-size: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+  /* ── Tablet overrides ── */
+  .tablet .page-content { padding: 12px 14px; }
+  .tablet .nav { padding: 0 14px; }
+  .tablet .nav-link:not(.active) { display: none; }
+  .tablet .breadcrumb { padding: 7px 14px; }
+  .tablet .detail-body { grid-template-columns: 1fr; }
+  .tablet .detail-sidebar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .tablet .score-hero { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .tablet .score-big { font-size: 36px; }
+
+  /* ── Legend ── */
+  .legend { margin-top: 18px; padding: 12px 14px; background: #fff; border: 1px solid #D4D1CA; border-radius: 6px; }
+  .legend-title { font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 500; color: #4A4A45; letter-spacing: 0.06em; margin-bottom: 10px; text-transform: uppercase; }
+  .legend-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px 20px; }
+  .legend-item { display: flex; align-items: center; gap: 7px; font-family: 'IBM Plex Mono', monospace; font-size: 8px; color: #6B6960; }
+  .legend-swatch { width: 24px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>LLM Eval Tool · Phase 2: Design · Wireframe 03 of 04</h1>
+  <h2>Result Detail View</h2>
+  <p>medium fidelity · desktop (1280px) + tablet (768px) · both viewports</p>
+</div>
+
+<div class="frames">
+
+  <!-- ══════════════════════════════════════════
+       DESKTOP
+  ══════════════════════════════════════════ -->
+  <div class="frame-wrap">
+    <div class="frame-label">Desktop — 1280px</div>
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="browser-dots"><span></span><span></span><span></span></div>
+        <div class="browser-url">evaltools.dev/results/a3f8c1d2</div>
+      </div>
+      <div class="app">
+
+        <div class="nav">
+          <div class="nav-logo">eval<span>.</span>tool</div>
+          <div class="nav-links">
+            <div class="nav-link">submit</div>
+            <div class="nav-link active">results</div>
+            <div class="nav-link">dashboard</div>
+            <div class="nav-link">rubrics</div>
+            <div class="nav-user">MR</div>
+          </div>
+        </div>
+
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+          <span class="crumb-link">results</span>
+          <span class="sep">›</span>
+          <span class="current">job a3f8c1d2</span>
+        </div>
+
+        <div class="page-content">
+
+          <!-- Detail header -->
+          <div class="detail-header">
+            <div class="detail-header-left">
+              <div class="detail-title">Job a3f8c1d2</div>
+              <div class="detail-meta">
+                <div class="status-badge badge-completed"><div class="status-dot"></div>completed</div>
+                <span class="meta-sep">·</span>
+                <span>Default rubric</span>
+                <span class="meta-sep">·</span>
+                <span>P1 standard</span>
+                <span class="meta-sep">·</span>
+                <span>2h ago</span>
+              </div>
+            </div>
+            <div class="header-actions">
+              <div class="wf-btn ghost">‹ prev job</div>
+              <div class="wf-btn ghost">next job ›</div>
+              <div class="wf-btn ghost">re-evaluate</div>
+              <div class="wf-btn primary">export JSON</div>
+            </div>
+          </div>
+
+          <!-- Two-col body -->
+          <div class="detail-body">
+
+            <!-- ── Main column ── -->
+            <div class="detail-main">
+
+              <!-- Composite score card -->
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">
+                    <div class="card-title-dot" style="background:#1D9E75"></div>
+                    composite score
+                  </div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:7.5px;color:#8A8880;">weighted average · Correctness×0.4 + Relevance×0.3 + Faithfulness×0.3</div>
+                </div>
+                <div class="score-hero">
+                  <div>
+                    <div class="score-big">4.6<span class="score-denom"> /5</span></div>
+                  </div>
+                  <div class="score-hero-right">
+                    <div class="score-label">dimension breakdown</div>
+                    <div class="dim-rows">
+                      <div class="dim-row">
+                        <div class="dim-label">Correctness</div>
+                        <div class="dim-track"><div class="dim-fill fill-correctness" style="width:100%"></div></div>
+                        <div class="dim-score-val">5</div>
+                        <div class="dim-weight-tag">×0.4</div>
+                      </div>
+                      <div class="dim-row">
+                        <div class="dim-label">Relevance</div>
+                        <div class="dim-track"><div class="dim-fill fill-relevance" style="width:80%"></div></div>
+                        <div class="dim-score-val">4</div>
+                        <div class="dim-weight-tag">×0.3</div>
+                      </div>
+                      <div class="dim-row">
+                        <div class="dim-label">Faithfulness</div>
+                        <div class="dim-track"><div class="dim-fill fill-faithfulness" style="width:80%"></div></div>
+                        <div class="dim-score-val">4</div>
+                        <div class="dim-weight-tag">×0.3</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Rationale: Correctness -->
+              <div class="rationale-card">
+                <div class="rationale-header">
+                  <div style="width:8px;height:8px;border-radius:50%;background:#534AB7;flex-shrink:0;"></div>
+                  <div class="rationale-dim-name">Correctness</div>
+                  <div class="rationale-score-pill pill-correctness">
+                    <div class="score-pip-row">
+                      <div class="score-pip pip-filled-c"></div>
+                      <div class="score-pip pip-filled-c"></div>
+                      <div class="score-pip pip-filled-c"></div>
+                      <div class="score-pip pip-filled-c"></div>
+                      <div class="score-pip pip-filled-c"></div>
+                    </div>
+                    5 / 5
+                  </div>
+                </div>
+                <div class="rationale-body">
+                  <div class="rationale-text">
+                    <strong>The response is factually accurate throughout.</strong> The distinction between supervised learning (labelled training data, explicit feedback signal) and unsupervised learning (unlabelled data, pattern discovery) is stated correctly. Examples — classification and regression for supervised; clustering and dimensionality reduction for unsupervised — are appropriate and accurate. No hallucinated claims or technical errors detected.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Rationale: Relevance -->
+              <div class="rationale-card">
+                <div class="rationale-header">
+                  <div style="width:8px;height:8px;border-radius:50%;background:#1D9E75;flex-shrink:0;"></div>
+                  <div class="rationale-dim-name">Relevance</div>
+                  <div class="rationale-score-pill pill-relevance">
+                    <div class="score-pip-row">
+                      <div class="score-pip pip-filled-r"></div>
+                      <div class="score-pip pip-filled-r"></div>
+                      <div class="score-pip pip-filled-r"></div>
+                      <div class="score-pip pip-filled-r"></div>
+                      <div class="score-pip pip-empty"></div>
+                    </div>
+                    4 / 5
+                  </div>
+                </div>
+                <div class="rationale-body">
+                  <div class="rationale-text">
+                    <strong>The response addresses the prompt directly and stays on topic.</strong> However, the final paragraph introduces a brief discussion of semi-supervised learning which, while related, was not asked for. This mild scope creep reduces the relevance score slightly. The core content — the comparison between the two paradigms — is well-targeted to the question.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Rationale: Faithfulness -->
+              <div class="rationale-card">
+                <div class="rationale-header">
+                  <div style="width:8px;height:8px;border-radius:50%;background:#378ADD;flex-shrink:0;"></div>
+                  <div class="rationale-dim-name">Faithfulness</div>
+                  <div class="rationale-score-pill pill-faithfulness">
+                    <div class="score-pip-row">
+                      <div class="score-pip pip-filled-f"></div>
+                      <div class="score-pip pip-filled-f"></div>
+                      <div class="score-pip pip-filled-f"></div>
+                      <div class="score-pip pip-filled-f"></div>
+                      <div class="score-pip pip-empty"></div>
+                    </div>
+                    4 / 5
+                  </div>
+                </div>
+                <div class="rationale-body">
+                  <div class="rationale-text">
+                    <strong>Claims are well-grounded and do not contradict the prompt context.</strong> The response does not introduce speculative claims or go beyond what can be reasonably inferred. One minor issue: the assertion that "unsupervised learning is always more computationally expensive" is an overgeneralisation not supported by the prompt context and not universally true. This deducts one point.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Prompt card -->
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">
+                    <div class="card-title-dot" style="background:#8A8880"></div>
+                    original prompt
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="text-block">Explain the difference between supervised and unsupervised learning in machine learning. Include examples of each.</div>
+                </div>
+              </div>
+
+              <!-- Response card -->
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">
+                    <div class="card-title-dot" style="background:#8A8880"></div>
+                    model response
+                  </div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:7.5px;color:#8A8880;">sha256: a3f8c1d2…</div>
+                </div>
+                <div class="card-body">
+                  <div style="position:relative;">
+                    <div class="text-block response">Supervised learning is a type of machine learning where the algorithm is trained on labelled data — each training example is paired with an output label. The model learns to map inputs to outputs by minimising a loss function...
+                    </div>
+                    <div class="text-fade"></div>
+                  </div>
+                  <span class="expand-link">show full response ↓</span>
+                </div>
+              </div>
+
+            </div><!-- /detail-main -->
+
+            <!-- ── Sidebar ── -->
+            <div class="detail-sidebar">
+
+              <!-- Job metadata -->
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">
+                    <div class="card-title-dot" style="background:#8A8880"></div>
+                    job metadata
+                  </div>
+                </div>
+                <div class="card-body" style="padding:8px 14px;">
+                  <div class="meta-table">
+                    <div class="meta-row">
+                      <div class="meta-key">job id</div>
+                      <div class="meta-val mono-id">a3f8c1d2-9e4b-4f1a-b82c-3d7e6f521c09</div>
+                    </div>
+                    <div class="meta-row">
+                      <div class="meta-key">status</div>
+                      <div class="meta-val"><div class="status-badge badge-completed" style="display:inline-flex;"><div class="status-dot"></div>completed</div></div>
+                    </div>
+                    <div class="meta-row">
+                      <div class="meta-key">priority</div>
+                      <div class="meta-val">P1 · standard</div>
+                    </div>
+                    <div class="meta-row">
+                      <div class="meta-key">submitted</div>
+                      <div class="meta-val">2026-04-14  14:32 UTC</div>
+                    </div>
+                    <div class="meta-row">
+                      <div class="meta-key">completed</div>
+                      <div class="meta-val">2026-04-14  14:32 UTC</div>
+                    </div>
+                    <div class="meta-row">
+                      <div class="meta-key">latency</div>
+                      <div class="meta-val">8.4 s</div>
+                    </div>
+                    <div class="meta-row">
+                      <div class="meta-key">retries</div>
+                      <div class="meta-val">0</div>
+                    </div>
+                    <div class="meta-row">
+                      <div class="meta-key">sha-256</div>
+                      <div class="meta-val">
+                        <div class="hash-preview">
+                          <span class="hash-text">a3f8c1d2…e7291f</span>
+                          <span class="hash-copy">copy</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="meta-row">
+                      <div class="meta-key">cache</div>
+                      <div class="meta-val">miss → evaluated</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Rubric used -->
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">
+                    <div class="card-title-dot" style="background:#0F6E56"></div>
+                    rubric used
+                  </div>
+                </div>
+                <div class="rubric-mini">
+                  <div class="rubric-mini-name">Default rubric</div>
+                  <div class="dim-row">
+                    <div class="dim-label" style="width:76px;">Correctness</div>
+                    <div class="dim-track"><div class="dim-fill fill-correctness" style="width:40%"></div></div>
+                    <div class="dim-weight-tag">40%</div>
+                  </div>
+                  <div class="dim-row">
+                    <div class="dim-label" style="width:76px;">Relevance</div>
+                    <div class="dim-track"><div class="dim-fill fill-relevance" style="width:30%"></div></div>
+                    <div class="dim-weight-tag">30%</div>
+                  </div>
+                  <div class="dim-row">
+                    <div class="dim-label" style="width:76px;">Faithfulness</div>
+                    <div class="dim-track"><div class="dim-fill fill-faithfulness" style="width:30%"></div></div>
+                    <div class="dim-weight-tag">30%</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Prev / Next -->
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">
+                    <div class="card-title-dot" style="background:#8A8880"></div>
+                    navigate jobs
+                  </div>
+                </div>
+                <div class="nav-card-body">
+                  <div class="nav-job-btn disabled">‹ prev</div>
+                  <div class="nav-job-btn">next ›</div>
+                </div>
+              </div>
+
+              <!-- Actions -->
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">
+                    <div class="card-title-dot" style="background:#8A8880"></div>
+                    actions
+                  </div>
+                </div>
+                <div class="card-body" style="display:flex;flex-direction:column;gap:6px;padding:10px 14px;">
+                  <div class="wf-btn ghost" style="justify-content:center;width:100%;height:28px;">re-evaluate with different rubric</div>
+                  <div class="wf-btn ghost" style="justify-content:center;width:100%;height:28px;">export JSON</div>
+                  <div class="wf-btn ghost" style="justify-content:center;width:100%;height:28px;color:#A32D2D;border-color:#F09595;">delete job</div>
+                </div>
+              </div>
+
+            </div><!-- /detail-sidebar -->
+          </div><!-- /detail-body -->
+        </div><!-- /page-content -->
+
+        <div class="status-bar">
+          <div class="status-indicator"><div class="status-dot-green"></div>API connected · queue depth: 3</div>
+          <div class="status-indicator">last eval: 2h ago</div>
+        </div>
+
+      </div>
+    </div>
+    <div class="frame-dim">1280 × 900 · Chrome · 100%</div>
+
+    <div class="annotations">
+      <div class="annotation"><div class="ann-num">1</div>Composite score hero: large numeral (4.6/5) left-anchored, dimension bars right. Color of the numeral maps to score tier — green ≥4.0, amber 2.5–3.9, red &lt;2.5. Weight formula shown in card header.</div>
+      <div class="annotation"><div class="ann-num">2</div>Each dimension rationale card is independently styled with its dimension color (purple/teal/blue). Score pill shows both dot row and number. Rationale text is Claude's chain-of-thought — stored verbatim in DIMENSION_SCORES.rationale.</div>
+      <div class="annotation"><div class="ann-num">3</div>Response card truncates at 80px with a gradient fade. "show full response ↓" expands inline — no modal. SHA-256 fingerprint shown in header with one-click copy.</div>
+      <div class="annotation"><div class="ann-num">4</div>Metadata sidebar: latency, retry count, cache hit/miss, and full UUID all surfaced. Cache status ("miss → evaluated" vs "hit → cached") lets you trace whether this result was computed or retrieved.</div>
+      <div class="annotation"><div class="ann-num">5</div>Prev/Next navigation persists the current filter context from the results table — navigating jobs respects whatever filters were active when you clicked through.</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TABLET
+  ══════════════════════════════════════════ -->
+  <div class="frame-wrap">
+    <div class="frame-label">Tablet — 768px</div>
+    <div class="browser tablet">
+      <div class="browser-bar">
+        <div class="browser-dots"><span></span><span></span><span></span></div>
+        <div class="browser-url">evaltools.dev/results/a3f8c1d2</div>
+      </div>
+      <div class="app">
+
+        <div class="nav">
+          <div class="nav-logo">eval<span>.</span>tool</div>
+          <div class="nav-links">
+            <div class="nav-link active">results</div>
+            <div class="nav-user">MR</div>
+          </div>
+        </div>
+
+        <div class="breadcrumb">
+          <span class="crumb-link">results</span>
+          <span class="sep">›</span>
+          <span class="current">a3f8c1d2</span>
+        </div>
+
+        <div class="page-content">
+
+          <!-- Header condensed -->
+          <div class="detail-header" style="flex-direction:column;gap:8px;margin-bottom:12px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+              <div class="detail-title">Job a3f8c1d2</div>
+              <div style="display:flex;gap:5px;">
+                <div class="wf-btn ghost" style="font-size:7.5px;">re-eval</div>
+                <div class="wf-btn primary" style="font-size:7.5px;">JSON</div>
+              </div>
+            </div>
+            <div class="detail-meta">
+              <div class="status-badge badge-completed"><div class="status-dot"></div>completed</div>
+              <span class="meta-sep">·</span>
+              <span>Default rubric</span>
+              <span class="meta-sep">·</span>
+              <span>2h ago</span>
+            </div>
+          </div>
+
+          <!-- Stacked body -->
+          <div style="display:flex;flex-direction:column;gap:10px;">
+
+            <!-- Score card — horizontal on tablet -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title"><div class="card-title-dot" style="background:#1D9E75"></div>composite score</div>
+              </div>
+              <div class="score-hero" style="flex-direction:row;align-items:center;padding:12px 14px;gap:14px;">
+                <div class="score-big" style="font-size:36px;">4.6<span class="score-denom"> /5</span></div>
+                <div style="flex:1;">
+                  <div class="score-label">breakdown</div>
+                  <div class="dim-rows">
+                    <div class="dim-row">
+                      <div class="dim-label" style="width:68px;">Correctness</div>
+                      <div class="dim-track"><div class="dim-fill fill-correctness" style="width:100%"></div></div>
+                      <div class="dim-score-val">5</div>
+                      <div class="dim-weight-tag">×0.4</div>
+                    </div>
+                    <div class="dim-row">
+                      <div class="dim-label" style="width:68px;">Relevance</div>
+                      <div class="dim-track"><div class="dim-fill fill-relevance" style="width:80%"></div></div>
+                      <div class="dim-score-val">4</div>
+                      <div class="dim-weight-tag">×0.3</div>
+                    </div>
+                    <div class="dim-row">
+                      <div class="dim-label" style="width:68px;">Faithfulness</div>
+                      <div class="dim-track"><div class="dim-fill fill-faithfulness" style="width:80%"></div></div>
+                      <div class="dim-score-val">4</div>
+                      <div class="dim-weight-tag">×0.3</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Rationale cards — stacked -->
+            <div class="rationale-card">
+              <div class="rationale-header">
+                <div style="width:8px;height:8px;border-radius:50%;background:#534AB7;flex-shrink:0;"></div>
+                <div class="rationale-dim-name">Correctness</div>
+                <div class="rationale-score-pill pill-correctness">
+                  <div class="score-pip-row">
+                    <div class="score-pip pip-filled-c"></div><div class="score-pip pip-filled-c"></div><div class="score-pip pip-filled-c"></div><div class="score-pip pip-filled-c"></div><div class="score-pip pip-filled-c"></div>
+                  </div>
+                  5 / 5
+                </div>
+              </div>
+              <div class="rationale-body">
+                <div class="rationale-text"><strong>The response is factually accurate throughout.</strong> The distinction between supervised and unsupervised learning is stated correctly. Examples are appropriate and accurate. No hallucinated claims detected.</div>
+              </div>
+            </div>
+
+            <div class="rationale-card">
+              <div class="rationale-header">
+                <div style="width:8px;height:8px;border-radius:50%;background:#1D9E75;flex-shrink:0;"></div>
+                <div class="rationale-dim-name">Relevance</div>
+                <div class="rationale-score-pill pill-relevance">
+                  <div class="score-pip-row">
+                    <div class="score-pip pip-filled-r"></div><div class="score-pip pip-filled-r"></div><div class="score-pip pip-filled-r"></div><div class="score-pip pip-filled-r"></div><div class="score-pip pip-empty"></div>
+                  </div>
+                  4 / 5
+                </div>
+              </div>
+              <div class="rationale-body">
+                <div class="rationale-text"><strong>The response addresses the prompt directly.</strong> A brief digression into semi-supervised learning — not asked for — reduces the score slightly.</div>
+              </div>
+            </div>
+
+            <div class="rationale-card">
+              <div class="rationale-header">
+                <div style="width:8px;height:8px;border-radius:50%;background:#378ADD;flex-shrink:0;"></div>
+                <div class="rationale-dim-name">Faithfulness</div>
+                <div class="rationale-score-pill pill-faithfulness">
+                  <div class="score-pip-row">
+                    <div class="score-pip pip-filled-f"></div><div class="score-pip pip-filled-f"></div><div class="score-pip pip-filled-f"></div><div class="score-pip pip-filled-f"></div><div class="score-pip pip-empty"></div>
+                  </div>
+                  4 / 5
+                </div>
+              </div>
+              <div class="rationale-body">
+                <div class="rationale-text"><strong>Claims are well-grounded.</strong> One overgeneralisation: "unsupervised learning is always more computationally expensive" is not universally true and not supported by the prompt context.</div>
+              </div>
+            </div>
+
+            <!-- Sidebar cards in 2-col grid on tablet -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+
+              <!-- Metadata condensed -->
+              <div class="card">
+                <div class="card-header"><div class="card-title"><div class="card-title-dot" style="background:#8A8880"></div>metadata</div></div>
+                <div class="card-body" style="padding:8px 12px;">
+                  <div class="meta-table">
+                    <div class="meta-row"><div class="meta-key">status</div><div class="meta-val"><div class="status-badge badge-completed" style="display:inline-flex;font-size:6.5px;"><div class="status-dot"></div>done</div></div></div>
+                    <div class="meta-row"><div class="meta-key">latency</div><div class="meta-val">8.4 s</div></div>
+                    <div class="meta-row"><div class="meta-key">retries</div><div class="meta-val">0</div></div>
+                    <div class="meta-row"><div class="meta-key">cache</div><div class="meta-val">miss</div></div>
+                    <div class="meta-row"><div class="meta-key">sha-256</div><div class="meta-val"><span class="hash-text" style="font-size:6.5px;">a3f8c1d2…</span></div></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Rubric + nav stacked -->
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div class="card">
+                  <div class="card-header"><div class="card-title"><div class="card-title-dot" style="background:#0F6E56"></div>rubric</div></div>
+                  <div class="rubric-mini" style="padding:8px 12px;">
+                    <div class="rubric-mini-name" style="font-size:8px;">Default</div>
+                    <div class="dim-row"><div class="dim-label" style="width:60px;font-size:7.5px;">Correctness</div><div class="dim-track"><div class="dim-fill fill-correctness" style="width:40%"></div></div><div class="dim-weight-tag">40%</div></div>
+                    <div class="dim-row"><div class="dim-label" style="width:60px;font-size:7.5px;">Relevance</div><div class="dim-track"><div class="dim-fill fill-relevance" style="width:30%"></div></div><div class="dim-weight-tag">30%</div></div>
+                    <div class="dim-row"><div class="dim-label" style="width:60px;font-size:7.5px;">Faithfulness</div><div class="dim-track"><div class="dim-fill fill-faithfulness" style="width:30%"></div></div><div class="dim-weight-tag">30%</div></div>
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="card-header"><div class="card-title"><div class="card-title-dot" style="background:#8A8880"></div>navigate</div></div>
+                  <div class="nav-card-body" style="padding:8px 12px;">
+                    <div class="nav-job-btn disabled" style="font-size:7.5px;">‹ prev</div>
+                    <div class="nav-job-btn" style="font-size:7.5px;">next ›</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Prompt / Response condensed -->
+            <div class="card">
+              <div class="card-header"><div class="card-title"><div class="card-title-dot" style="background:#8A8880"></div>prompt</div></div>
+              <div class="card-body"><div class="text-block" style="font-size:7.5px;">Explain the difference between supervised and unsupervised learning in machine learning. Include examples of each.</div></div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title"><div class="card-title-dot" style="background:#8A8880"></div>response</div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:7px;color:#8A8880;">sha256: a3f8c1d2…</div>
+              </div>
+              <div class="card-body">
+                <div style="position:relative;">
+                  <div class="text-block response" style="font-size:7.5px;max-height:60px;">Supervised learning is a type of machine learning where the algorithm is trained on labelled data — each training example is paired with an output label...</div>
+                  <div class="text-fade"></div>
+                </div>
+                <span class="expand-link">show full response ↓</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="status-bar">
+          <div class="status-indicator"><div class="status-dot-green"></div>connected</div>
+          <div class="status-indicator">queue: 3</div>
+        </div>
+
+      </div>
+    </div>
+    <div class="frame-dim">768 × 900 · Chrome · 100%</div>
+
+    <div class="annotations">
+      <div class="annotation"><div class="ann-num">A</div>On tablet, the two-column layout collapses to a single column. Sidebar cards move below the rationale cards, arranged in a 2-col grid to maintain density without horizontal scroll.</div>
+      <div class="annotation"><div class="ann-num">B</div>Score hero stays horizontal on tablet — big number left, bars right. Shrinks from 44px to 36px numeral. Avoids stacking which would make the card disproportionately tall.</div>
+      <div class="annotation"><div class="ann-num">C</div>Header actions condense to two buttons — "re-eval" and "JSON". Prev/Next and delete move to the navigate and actions sidebar cards below.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Legend ── -->
+<div class="legend">
+  <div class="legend-title">Dimension color system</div>
+  <div class="legend-grid">
+    <div class="legend-item"><div class="legend-swatch" style="background:#534AB7;"></div>Correctness · Purple 600</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#1D9E75;"></div>Relevance · Teal 400</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#378ADD;"></div>Faithfulness · Blue 400</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#0F6E56;"></div>Composite ≥4.0 · Teal 600</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#854F0B;"></div>Composite 2.5–3.9 · Amber 600</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#A32D2D;"></div>Composite &lt;2.5 · Red 600</div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wireframe — Submission Form</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: #EDEBE6;
+    min-height: 100vh;
+    padding: 32px 24px 48px;
+    color: #1A1A18;
+  }
+
+  /* ── Page header ── */
+  .page-header {
+    margin-bottom: 28px;
+  }
+  .page-header h1 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #6B6960;
+    margin-bottom: 6px;
+  }
+  .page-header h2 {
+    font-size: 20px;
+    font-weight: 500;
+    color: #1A1A18;
+    letter-spacing: -0.02em;
+  }
+  .page-header p {
+    font-size: 12px;
+    color: #8A8880;
+    margin-top: 4px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  /* ── Two-column layout ── */
+  .frames {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+
+  .frame-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .frame-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #8A8880;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .frame-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #D4D1CA;
+  }
+
+  .frame-dim {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    color: #ABAAA4;
+    margin-top: 6px;
+    text-align: center;
+  }
+
+  /* ── Browser chrome ── */
+  .browser {
+    background: #fff;
+    border-radius: 8px;
+    border: 1.5px solid #C8C5BE;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  }
+
+  .browser-bar {
+    background: #F0EEE9;
+    border-bottom: 1px solid #D4D1CA;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .browser-dots {
+    display: flex;
+    gap: 5px;
+  }
+  .browser-dots span {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #C8C5BE;
+    display: block;
+  }
+  .browser-url {
+    flex: 1;
+    background: #E4E2DC;
+    border-radius: 4px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8.5px;
+    color: #8A8880;
+  }
+
+  /* ── App shell ── */
+  .app {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  /* ── Top nav ── */
+  .nav {
+    background: #1A1A18;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 42px;
+    flex-shrink: 0;
+  }
+  .nav-logo {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: #EDEBE6;
+    letter-spacing: 0.06em;
+  }
+  .nav-logo span {
+    color: #7F77DD;
+  }
+  .nav-links {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  .nav-link {
+    font-size: 10px;
+    color: #8A8880;
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+  }
+  .nav-link.active {
+    color: #EDEBE6;
+  }
+  .nav-user {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: #3C3489;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    color: #CECBF6;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500;
+  }
+
+  /* ── Page content ── */
+  .page-content {
+    padding: 20px;
+    background: #F5F3EE;
+    flex: 1;
+  }
+
+  .page-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1A1A18;
+    letter-spacing: -0.01em;
+    margin-bottom: 3px;
+  }
+  .page-subtitle {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8.5px;
+    color: #8A8880;
+    margin-bottom: 16px;
+  }
+
+  /* ── Form card ── */
+  .form-card {
+    background: #fff;
+    border: 1px solid #D4D1CA;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .form-section {
+    padding: 14px 16px;
+    border-bottom: 1px solid #EDEBE6;
+  }
+  .form-section:last-child { border-bottom: none; }
+
+  .form-section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #8A8880;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .section-num {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: #EEEDFE;
+    color: #534AB7;
+    font-size: 7px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .field-label {
+    font-size: 9px;
+    font-weight: 500;
+    color: #4A4A45;
+    margin-bottom: 4px;
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.04em;
+  }
+  .field-hint {
+    font-size: 8px;
+    color: #ABAAA4;
+    margin-bottom: 5px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .wf-input {
+    width: 100%;
+    background: #F5F3EE;
+    border: 1px solid #D4D1CA;
+    border-radius: 5px;
+    padding: 7px 9px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px;
+    color: #6B6960;
+    line-height: 1.5;
+    resize: none;
+  }
+  .wf-input.sm { height: 32px; }
+  .wf-input.md { height: 52px; }
+  .wf-input.lg { height: 72px; }
+
+  .wf-input.placeholder-styled { color: #ABAAA4; }
+
+  .char-count {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 7.5px;
+    color: #ABAAA4;
+    text-align: right;
+    margin-top: 3px;
+  }
+
+  /* ── Two-col row inside form ── */
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  /* ── Rubric select ── */
+  .rubric-select {
+    width: 100%;
+    background: #F5F3EE;
+    border: 1px solid #D4D1CA;
+    border-radius: 5px;
+    padding: 7px 9px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px;
+    color: #4A4A45;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 32px;
+  }
+  .rubric-select .chevron {
+    width: 0; height: 0;
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-top: 4px solid #8A8880;
+  }
+
+  /* ── Priority pills ── */
+  .priority-pills {
+    display: flex;
+    gap: 6px;
+    margin-top: 2px;
+  }
+  .priority-pill {
+    flex: 1;
+    height: 26px;
+    border-radius: 5px;
+    border: 1px solid #D4D1CA;
+    background: #F5F3EE;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px;
+    color: #8A8880;
+    gap: 4px;
+  }
+  .priority-pill.selected {
+    border-color: #534AB7;
+    background: #EEEDFE;
+    color: #534AB7;
+  }
+  .priority-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+  }
+  .p0 .priority-dot { background: #D85A30; }
+  .p1.selected .priority-dot { background: #534AB7; }
+  .p1 .priority-dot { background: #ABAAA4; }
+  .p2 .priority-dot { background: #ABAAA4; }
+
+  /* ── Rubric preview ── */
+  .rubric-preview {
+    background: #F5F3EE;
+    border: 1px solid #D4D1CA;
+    border-radius: 5px;
+    padding: 8px 10px;
+    margin-top: 6px;
+  }
+  .rubric-preview-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 7.5px;
+    font-weight: 500;
+    color: #4A4A45;
+    margin-bottom: 6px;
+  }
+  .rubric-dim-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+  .rubric-dim-row:last-child { margin-bottom: 0; }
+  .dim-name {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 7.5px;
+    color: #4A4A45;
+    width: 72px;
+    flex-shrink: 0;
+  }
+  .dim-bar-track {
+    flex: 1;
+    height: 4px;
+    background: #E4E2DC;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .dim-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: #534AB7;
+  }
+  .dim-weight {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 7px;
+    color: #8A8880;
+    width: 22px;
+    text-align: right;
+  }
+
+  /* ── Submit row ── */
+  .submit-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .submit-hint {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 7.5px;
+    color: #ABAAA4;
+    line-height: 1.4;
+  }
+
+  .wf-btn {
+    height: 32px;
+    padding: 0 16px;
+    border-radius: 5px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .wf-btn.primary {
+    background: #534AB7;
+    color: #fff;
+    border: none;
+  }
+  .wf-btn.ghost {
+    background: transparent;
+    color: #6B6960;
+    border: 1px solid #D4D1CA;
+  }
+
+  .btn-icon {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .btn-icon::after {
+    content: '';
+    width: 0; height: 0;
+    border-top: 3px solid transparent;
+    border-bottom: 3px solid transparent;
+    border-left: 5px solid white;
+    margin-left: 1px;
+  }
+
+  /* ── Status bar ── */
+  .status-bar {
+    background: #F0EEE9;
+    border-top: 1px solid #D4D1CA;
+    padding: 5px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 7.5px;
+    color: #8A8880;
+  }
+  .status-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: #1D9E75;
+  }
+
+  /* ── Tablet-specific overrides ── */
+  .tablet .page-content { padding: 14px; }
+  .tablet .nav { padding: 0 14px; }
+  .tablet .nav-links { gap: 14px; }
+  .tablet .nav-link:not(.active) { display: none; }
+  .tablet .form-section { padding: 11px 12px; }
+  .tablet .field-row { grid-template-columns: 1fr; gap: 8px; }
+  .tablet .wf-input.lg { height: 60px; }
+  .tablet .wf-input.md { height: 44px; }
+
+  /* ── Annotation layer ── */
+  .annotations {
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .annotation {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px;
+    color: #6B6960;
+    line-height: 1.4;
+  }
+  .ann-num {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: #1A1A18;
+    color: #EDEBE6;
+    font-size: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 0px;
+  }
+
+  /* ── Redline callouts ── */
+  .callout-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 13px; height: 13px;
+    border-radius: 50%;
+    background: #E24B4A;
+    color: white;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 7px;
+    font-weight: 500;
+    position: absolute;
+    z-index: 10;
+  }
+
+  .rel-wrap { position: relative; }
+
+  /* Badge positions relative to their section */
+  .badge-1  { top: -6px; right: -6px; }
+  .badge-2  { top: -6px; right: -6px; }
+  .badge-3  { top: -6px; right: -6px; }
+  .badge-4  { top: -6px; right: -6px; }
+  .badge-5  { top: -6px; right: -6px; }
+
+  /* ── Legend panel ── */
+  .legend {
+    margin-top: 18px;
+    padding: 12px 14px;
+    background: #fff;
+    border: 1px solid #D4D1CA;
+    border-radius: 6px;
+  }
+  .legend-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    font-weight: 500;
+    color: #4A4A45;
+    letter-spacing: 0.06em;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+  .legend-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 20px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px;
+    color: #6B6960;
+  }
+  .legend-swatch {
+    width: 20px; height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>LLM Eval Tool · Phase 2: Design · Wireframe 01 of 04</h1>
+  <h2>Job Submission Form</h2>
+  <p>medium fidelity · desktop (1280px) + tablet (768px) · both viewports</p>
+</div>
+
+<div class="frames">
+
+  <!-- ── DESKTOP ── -->
+  <div class="frame-wrap">
+    <div class="frame-label">Desktop — 1280px</div>
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="browser-dots"><span></span><span></span><span></span></div>
+        <div class="browser-url">evaltools.dev/submit</div>
+      </div>
+      <div class="app">
+        <!-- Nav -->
+        <div class="nav">
+          <div class="nav-logo">eval<span>.</span>tool</div>
+          <div class="nav-links">
+            <div class="nav-link active">submit</div>
+            <div class="nav-link">results</div>
+            <div class="nav-link">dashboard</div>
+            <div class="nav-link">rubrics</div>
+            <div class="nav-user">MR</div>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div class="page-content">
+          <div class="page-title">New evaluation job</div>
+          <div class="page-subtitle">POST /api/v1/jobs · SHA-256 dedup checked on submit</div>
+
+          <div class="form-card">
+
+            <!-- Section 1: Prompt -->
+            <div class="form-section rel-wrap">
+              <span class="callout-badge badge-1">1</span>
+              <div class="form-section-label">
+                <span class="section-num">1</span>
+                Original prompt
+              </div>
+              <div class="field-label">Prompt text</div>
+              <div class="field-hint">The input that was given to the model being evaluated</div>
+              <div class="wf-input md placeholder-styled">e.g. "Explain the difference between supervised and unsupervised learning..."</div>
+              <div class="char-count">0 / 4000</div>
+            </div>
+
+            <!-- Section 2: Response -->
+            <div class="form-section rel-wrap">
+              <span class="callout-badge badge-2">2</span>
+              <div class="form-section-label">
+                <span class="section-num">2</span>
+                Model response
+              </div>
+              <div class="field-label">Response text</div>
+              <div class="field-hint">The LLM output to be scored — SHA-256 fingerprint computed on submit</div>
+              <div class="wf-input lg placeholder-styled">Paste the model's full response here...</div>
+              <div class="char-count">0 / 16000</div>
+            </div>
+
+            <!-- Section 3: Config -->
+            <div class="form-section rel-wrap">
+              <span class="callout-badge badge-3">3</span>
+              <div class="form-section-label">
+                <span class="section-num">3</span>
+                Evaluation config
+              </div>
+              <div class="field-row">
+                <div>
+                  <div class="field-label">Rubric</div>
+                  <div class="field-hint">Select a scoring rubric</div>
+                  <div class="rubric-select">
+                    <span>Default (Correctness · Relevance · Faithfulness)</span>
+                    <div class="chevron"></div>
+                  </div>
+                  <div class="rubric-preview">
+                    <div class="rubric-preview-title">Weight preview</div>
+                    <div class="rubric-dim-row">
+                      <div class="dim-name">Correctness</div>
+                      <div class="dim-bar-track"><div class="dim-bar-fill" style="width:40%"></div></div>
+                      <div class="dim-weight">40%</div>
+                    </div>
+                    <div class="rubric-dim-row">
+                      <div class="dim-name">Relevance</div>
+                      <div class="dim-bar-track"><div class="dim-bar-fill" style="width:30%; background:#0F6E56;"></div></div>
+                      <div class="dim-weight">30%</div>
+                    </div>
+                    <div class="rubric-dim-row">
+                      <div class="dim-name">Faithfulness</div>
+                      <div class="dim-bar-track"><div class="dim-bar-fill" style="width:30%; background:#0F6E56;"></div></div>
+                      <div class="dim-weight">30%</div>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <div class="field-label">Priority</div>
+                  <div class="field-hint">Determines queue position</div>
+                  <div class="priority-pills">
+                    <div class="priority-pill p0">
+                      <div class="priority-dot" style="background:#D85A30"></div>
+                      urgent
+                    </div>
+                    <div class="priority-pill p1 selected">
+                      <div class="priority-dot"></div>
+                      standard
+                    </div>
+                    <div class="priority-pill p2">
+                      <div class="priority-dot"></div>
+                      background
+                    </div>
+                  </div>
+                  <div class="field-hint" style="margin-top:8px; margin-bottom:0">
+                    Urgent jobs preempt standard queue.<br>
+                    Background runs when queue is idle.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 4: Submit -->
+            <div class="form-section rel-wrap">
+              <span class="callout-badge badge-4">4</span>
+              <div class="submit-row">
+                <div class="submit-hint">
+                  Result returns immediately if this response<br>
+                  was previously evaluated (cache hit).
+                </div>
+                <div style="display:flex;gap:8px">
+                  <div class="wf-btn ghost">clear form</div>
+                  <div class="wf-btn primary">
+                    <div class="btn-icon"></div>
+                    submit job
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /form-card -->
+        </div><!-- /page-content -->
+
+        <!-- Status bar -->
+        <div class="status-bar">
+          <div class="status-indicator">
+            <div class="status-dot"></div>
+            API connected · queue depth: 3
+          </div>
+          <div class="status-indicator">last eval: 2m ago</div>
+        </div>
+
+      </div><!-- /app -->
+    </div><!-- /browser -->
+    <div class="frame-dim">1280 × 800 · Chrome · 100%</div>
+
+    <!-- Annotations -->
+    <div class="annotations">
+      <div class="annotation"><div class="ann-num">1</div>Prompt field — 4,000 char limit. Live char count bottom-right. No label animation, just static label above.</div>
+      <div class="annotation"><div class="ann-num">2</div>Response field — 16,000 char limit. SHA-256 computed client-side on blur; fingerprint shown as 8-char prefix in char count area.</div>
+      <div class="annotation"><div class="ann-num">3</div>Rubric selector opens a dropdown of saved rubrics. Weight preview panel updates live on selection. Priority pills are mutually exclusive toggles.</div>
+      <div class="annotation"><div class="ann-num">4</div>Submit triggers POST /api/v1/jobs. On cache hit: inline banner replaces submit row. On miss: status badge animates to "queued" and ticket number appears.</div>
+    </div>
+  </div>
+
+  <!-- ── TABLET ── -->
+  <div class="frame-wrap">
+    <div class="frame-label">Tablet — 768px</div>
+    <div class="browser tablet">
+      <div class="browser-bar">
+        <div class="browser-dots"><span></span><span></span><span></span></div>
+        <div class="browser-url">evaltools.dev/submit</div>
+      </div>
+      <div class="app">
+        <!-- Nav (collapsed) -->
+        <div class="nav">
+          <div class="nav-logo">eval<span>.</span>tool</div>
+          <div class="nav-links">
+            <div class="nav-link active">submit</div>
+            <div class="nav-link">results</div>
+            <div class="nav-user">MR</div>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div class="page-content">
+          <div class="page-title">New evaluation job</div>
+          <div class="page-subtitle">POST /api/v1/jobs</div>
+
+          <div class="form-card">
+
+            <!-- Prompt -->
+            <div class="form-section">
+              <div class="form-section-label">
+                <span class="section-num">1</span>
+                Original prompt
+              </div>
+              <div class="field-label">Prompt text</div>
+              <div class="wf-input md placeholder-styled">e.g. "Explain the difference..."</div>
+              <div class="char-count">0 / 4000</div>
+            </div>
+
+            <!-- Response -->
+            <div class="form-section">
+              <div class="form-section-label">
+                <span class="section-num">2</span>
+                Model response
+              </div>
+              <div class="field-label">Response text</div>
+              <div class="wf-input lg placeholder-styled">Paste the model's full response...</div>
+              <div class="char-count">0 / 16000</div>
+            </div>
+
+            <!-- Config — stacked on tablet -->
+            <div class="form-section">
+              <div class="form-section-label">
+                <span class="section-num">3</span>
+                Evaluation config
+              </div>
+              <div class="field-row">
+                <!-- Rubric -->
+                <div>
+                  <div class="field-label">Rubric</div>
+                  <div class="rubric-select">
+                    <span>Default rubric</span>
+                    <div class="chevron"></div>
+                  </div>
+                  <div class="rubric-preview" style="margin-top:6px">
+                    <div class="rubric-preview-title">Weight preview</div>
+                    <div class="rubric-dim-row">
+                      <div class="dim-name">Correctness</div>
+                      <div class="dim-bar-track"><div class="dim-bar-fill" style="width:40%"></div></div>
+                      <div class="dim-weight">40%</div>
+                    </div>
+                    <div class="rubric-dim-row">
+                      <div class="dim-name">Relevance</div>
+                      <div class="dim-bar-track"><div class="dim-bar-fill" style="width:30%;background:#0F6E56;"></div></div>
+                      <div class="dim-weight">30%</div>
+                    </div>
+                    <div class="rubric-dim-row">
+                      <div class="dim-name">Faithfulness</div>
+                      <div class="dim-bar-track"><div class="dim-bar-fill" style="width:30%;background:#0F6E56;"></div></div>
+                      <div class="dim-weight">30%</div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Priority -->
+                <div>
+                  <div class="field-label">Priority</div>
+                  <div class="priority-pills" style="flex-direction:column; gap:5px;">
+                    <div class="priority-pill p0" style="justify-content:flex-start; padding:0 8px;">
+                      <div class="priority-dot" style="background:#D85A30"></div>
+                      P0 · urgent
+                    </div>
+                    <div class="priority-pill p1 selected" style="justify-content:flex-start; padding:0 8px;">
+                      <div class="priority-dot"></div>
+                      P1 · standard
+                    </div>
+                    <div class="priority-pill p2" style="justify-content:flex-start; padding:0 8px;">
+                      <div class="priority-dot"></div>
+                      P2 · background
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Submit -->
+            <div class="form-section">
+              <div class="submit-row" style="flex-direction:column; align-items:stretch; gap:8px;">
+                <div class="submit-hint">Cache hit returns instantly without re-evaluation.</div>
+                <div style="display:flex;gap:8px;">
+                  <div class="wf-btn ghost" style="flex:1;justify-content:center;">clear</div>
+                  <div class="wf-btn primary" style="flex:2;justify-content:center;">
+                    <div class="btn-icon"></div>
+                    submit job
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /form-card -->
+        </div>
+
+        <!-- Status bar -->
+        <div class="status-bar">
+          <div class="status-indicator">
+            <div class="status-dot"></div>
+            connected
+          </div>
+          <div class="status-indicator">queue: 3</div>
+        </div>
+
+      </div>
+    </div><!-- /browser -->
+    <div class="frame-dim">768 × 800 · Chrome · 100%</div>
+
+    <!-- Tablet annotations -->
+    <div class="annotations">
+      <div class="annotation"><div class="ann-num">A</div>Nav collapses to logo + active link + avatar only. "dashboard" and "rubrics" move to avatar dropdown.</div>
+      <div class="annotation"><div class="ann-num">B</div>Config row stays two-column at 768px but priority pills stack vertically to avoid overflow.</div>
+      <div class="annotation"><div class="ann-num">C</div>Submit row stacks — hint above, buttons full-width below. Primary button takes 2/3 of row width.</div>
+      <div class="annotation"><div class="ann-num">D</div>Status bar condenses to single-word labels. Queue depth shown as raw number.</div>
+    </div>
+  </div>
+
+</div><!-- /frames -->
+
+<!-- ── Legend ── -->
+<div class="legend" style="margin-top:28px;">
+  <div class="legend-title">Design tokens in use</div>
+  <div class="legend-grid">
+    <div class="legend-item"><div class="legend-swatch" style="background:#534AB7;border-radius:3px;"></div>Primary action · Purple 600</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#EEEDFE;border:1px solid #534AB7;border-radius:3px;"></div>Selected state · Purple 50</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#1D9E75;border-radius:3px;"></div>Status connected · Teal 400</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#D85A30;border-radius:3px;"></div>Urgent priority · Coral 400</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#F5F3EE;border:1px solid #D4D1CA;border-radius:3px;"></div>Input background · Gray 50</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#1A1A18;border-radius:3px;"></div>Nav bar · Near black</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#0F6E56;border-radius:3px;"></div>Rubric bars alt · Teal 600</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#8A8880;border-radius:3px;"></div>Muted text · Gray 400</div>
+  </div>
+</div>
+
+</body>
+</html>

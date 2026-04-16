@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wireframe — Dashboard</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: #EDEBE6;
+    min-height: 100vh;
+    padding: 32px 24px 48px;
+    color: #1A1A18;
+  }
+
+  .page-header { margin-bottom: 28px; }
+  .page-header h1 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: #6B6960; margin-bottom: 6px;
+  }
+  .page-header h2 { font-size: 20px; font-weight: 500; color: #1A1A18; letter-spacing: -0.02em; }
+  .page-header p { font-size: 12px; color: #8A8880; margin-top: 4px; font-family: 'IBM Plex Mono', monospace; }
+
+  .frames { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+  .frame-wrap { display: flex; flex-direction: column; gap: 10px; }
+
+  .frame-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: #8A8880; display: flex; align-items: center; gap: 8px;
+  }
+  .frame-label::after { content: ''; flex: 1; height: 1px; background: #D4D1CA; }
+  .frame-dim { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #ABAAA4; margin-top: 6px; text-align: center; }
+
+  .browser { background: #fff; border-radius: 8px; border: 1.5px solid #C8C5BE; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+  .browser-bar { background: #F0EEE9; border-bottom: 1px solid #D4D1CA; padding: 8px 12px; display: flex; align-items: center; gap: 10px; }
+  .browser-dots { display: flex; gap: 5px; }
+  .browser-dots span { width: 8px; height: 8px; border-radius: 50%; background: #C8C5BE; display: block; }
+  .browser-url { flex: 1; background: #E4E2DC; border-radius: 4px; height: 18px; display: flex; align-items: center; padding: 0 8px; font-family: 'IBM Plex Mono', monospace; font-size: 8.5px; color: #8A8880; }
+
+  .app { display: flex; flex-direction: column; }
+
+  .nav { background: #1A1A18; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; height: 42px; }
+  .nav-logo { font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 500; color: #EDEBE6; letter-spacing: 0.06em; }
+  .nav-logo span { color: #7F77DD; }
+  .nav-links { display: flex; gap: 20px; align-items: center; }
+  .nav-link { font-size: 10px; color: #8A8880; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.06em; }
+  .nav-link.active { color: #EDEBE6; }
+  .nav-user { width: 22px; height: 22px; border-radius: 50%; background: #3C3489; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #CECBF6; font-family: 'IBM Plex Mono', monospace; font-weight: 500; }
+
+  .page-content { padding: 16px 20px; background: #F5F3EE; }
+
+  /* ── Toolbar ── */
+  .toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 10px; }
+  .toolbar-left { display: flex; flex-direction: column; gap: 3px; }
+  .page-title { font-size: 14px; font-weight: 500; color: #1A1A18; letter-spacing: -0.01em; }
+  .page-subtitle { font-family: 'IBM Plex Mono', monospace; font-size: 8px; color: #8A8880; }
+  .toolbar-right { display: flex; gap: 6px; align-items: center; }
+
+  .time-pills { display: flex; background: #E4E2DC; border-radius: 5px; padding: 2px; gap: 0; }
+  .time-pill {
+    height: 22px; padding: 0 9px;
+    border-radius: 4px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 8px;
+    color: #6B6960; display: flex; align-items: center; cursor: pointer;
+  }
+  .time-pill.active { background: #fff; color: #1A1A18; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+
+  .wf-btn {
+    height: 26px; padding: 0 10px; border-radius: 5px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 8px; font-weight: 500;
+    letter-spacing: 0.04em; display: flex; align-items: center; gap: 5px;
+    white-space: nowrap; cursor: pointer;
+  }
+  .wf-btn.ghost { background: transparent; color: #6B6960; border: 1px solid #D4D1CA; }
+  .wf-btn.primary { background: #534AB7; color: #fff; border: none; }
+
+  /* ── Card base ── */
+  .card { background: #fff; border: 1px solid #D4D1CA; border-radius: 8px; overflow: hidden; }
+  .card-header {
+    padding: 8px 14px; border-bottom: 1px solid #EDEBE6;
+    display: flex; align-items: center; justify-content: space-between;
+    background: #FAFAF8;
+  }
+  .card-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: #6B6960; display: flex; align-items: center; gap: 6px;
+  }
+  .card-title-dot { width: 7px; height: 7px; border-radius: 50%; }
+  .card-body { padding: 12px 14px; }
+  .card-hint { font-family: 'IBM Plex Mono', monospace; font-size: 7.5px; color: #ABAAA4; }
+
+  /* ── KPI row ── */
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }
+  .kpi-card {
+    background: #fff; border: 1px solid #D4D1CA; border-radius: 8px;
+    padding: 12px 14px; display: flex; flex-direction: column; gap: 4px;
+  }
+  .kpi-label { font-family: 'IBM Plex Mono', monospace; font-size: 7.5px; color: #8A8880; text-transform: uppercase; letter-spacing: 0.07em; }
+  .kpi-value { font-size: 22px; font-weight: 300; letter-spacing: -0.03em; color: #1A1A18; line-height: 1; }
+  .kpi-delta { font-family: 'IBM Plex Mono', monospace; font-size: 7.5px; display: flex; align-items: center; gap: 3px; }
+  .delta-up { color: #0F6E56; }
+  .delta-down { color: #A32D2D; }
+  .delta-neutral { color: #8A8880; }
+  .kpi-sub { font-family: 'IBM Plex Mono', monospace; font-size: 7px; color: #ABAAA4; }
+
+  /* ── Two-col chart row ── */
+  .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .chart-row-3 { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; margin-bottom: 12px; }
+
+  /* ── Histogram ── */
+  .histogram { display: flex; align-items: flex-end; gap: 3px; height: 70px; padding: 0 4px; }
+  .hist-bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 3px; flex: 1; }
+  .hist-bar { width: 100%; border-radius: 3px 3px 0 0; transition: opacity 0.15s; }
+  .hist-label { font-family: 'IBM Plex Mono', monospace; font-size: 6.5px; color: #8A8880; }
+  .hist-count { font-family: 'IBM Plex Mono', monospace; font-size: 6px; color: #ABAAA4; }
+
+  .chart-x-axis {
+    display: flex; justify-content: space-between;
+    padding: 4px 8px 0;
+    font-family: 'IBM Plex Mono', monospace; font-size: 7px; color: #ABAAA4;
+    border-top: 1px solid #EDEBE6;
+    margin: 0 4px;
+  }
+
+  /* ── Dimension avg bars ── */
+  .dim-avg-rows { display: flex; flex-direction: column; gap: 10px; padding: 4px 0; }
+  .dim-avg-row { display: flex; align-items: center; gap: 8px; }
+  .dim-avg-label { font-family: 'IBM Plex Mono', monospace; font-size: 8px; color: #4A4A45; width: 76px; flex-shrink: 0; }
+  .dim-avg-track { flex: 1; height: 8px; background: #EDEBE6; border-radius: 4px; overflow: hidden; position: relative; }
+  .dim-avg-fill { height: 100%; border-radius: 4px; }
+  .dim-avg-val { font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 500; color: #1A1A18; width: 28px; text-align: right; }
+
+  /* ── Score trend sparkline ── */
+  .sparkline-wrap { padding: 8px 4px 0; }
+  .sparkline-labels {
+    display: flex; justify-content: space-between;
+    font-family: 'IBM Plex Mono', monospace; font-size: 7px; color: #ABAAA4;
+    padding: 4px 4px 0;
+  }
+
+  /* ── Status donut ── */
+  .donut-wrap {
+    display: flex; align-items: center; gap: 16px;
+    padding: 8px 4px;
+  }
+  .donut-svg { flex-shrink: 0; }
+  .donut-legend { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+  .donut-legend-row { display: flex; align-items: center; gap: 6px; }
+  .donut-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .donut-name { font-family: 'IBM Plex Mono', monospace; font-size: 8px; color: #4A4A45; flex: 1; }
+  .donut-count { font-family: 'IBM Plex Mono', monospace; font-size: 8px; font-weight: 500; color: #1A1A18; }
+  .donut-pct { font-family: 'IBM Plex Mono', monospace; font-size: 7px; color: #8A8880; width: 28px; text-align: right; }
+
+  /* ── Queue depth gauge ── */
+  .gauge-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 8px 4px; }
+  .gauge-number { font-size: 32px; font-weight: 300; color: #854F0B; letter-spacing: -0.04em; line-height: 1; }
+  .gauge-label { font-family: 'IBM Plex Mono', monospace; font-size: 7.5px; color: #8A8880; text-transform: uppercase; letter-spacing: 0.07em; }
+  .gauge-track { width: 100%; height: 6px; background: #EDEBE6; border-radius: 3px; overflow: hidden; }
+  .gauge-fill { height: 100%; border-radius: 3px; background: #EF9F27; }
+  .gauge-limits { display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 7px; color: #ABAAA4; margin-top: 3px; width: 100%; }
+
+  /* ── Recent jobs mini table ── */
+  .mini-table { display: flex; flex-direction: column; }
+  .mini-row {
+    display: grid; grid-template-columns: 70px 1fr 44px 52px;
+    gap: 6px; padding: 6px 0;
+    border-bottom: 1px solid #EDEBE6;
+    align-items: center;
+  }
+  .mini-row:last-child { border-bottom: none; }
+  .mini-id { font-family: 'IBM Plex Mono', monospace; font-size: 7.5px; color: #534AB7; }
+  .mini-prompt { font-size: 8px; color: #4A4A45; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mini-score { font-family: 'IBM Plex Mono', monospace; font-size: 8.5px; font-weight: 500; }
+  .score-hi { color: #0F6E56; }
+  .score-mid { color: #854F0B; }
+  .score-lo { color: #A32D2D; }
+
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 3px;
+    padding: 2px 5px; border-radius: 8px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 6.5px; font-weight: 500;
+  }
+  .status-dot { width: 4px; height: 4px; border-radius: 50%; }
+  .badge-completed { background: #E1F5EE; color: #0F6E56; }
+  .badge-completed .status-dot { background: #1D9E75; }
+  .badge-processing { background: #FAEEDA; color: #854F0B; }
+  .badge-processing .status-dot { background: #EF9F27; }
+  .badge-failed { background: #FCEBEB; color: #A32D2D; }
+  .badge-failed .status-dot { background: #E24B4A; }
+  .badge-cached { background: #E1F5EE; color: #085041; }
+  .badge-cached .status-dot { background: #5DCAA5; }
+
+  /* ── Status bar ── */
+  .status-bar { background: #F0EEE9; border-top: 1px solid #D4D1CA; padding: 5px 16px; display: flex; align-items: center; justify-content: space-between; }
+  .status-indicator { display: flex; align-items: center; gap: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 7.5px; color: #8A8880; }
+  .status-dot-green { width: 5px; height: 5px; border-radius: 50%; background: #1D9E75; }
+
+  /* ── Annotations ── */
+  .annotations { margin-top: 14px; display: flex; flex-direction: column; gap: 5px; }
+  .annotation { display: flex; align-items: flex-start; gap: 7px; font-family: 'IBM Plex Mono', monospace; font-size: 8px; color: #6B6960; line-height: 1.4; }
+  .ann-num { width: 14px; height: 14px; border-radius: 50%; background: #1A1A18; color: #EDEBE6; font-size: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+  /* ── Tablet ── */
+  .tablet .page-content { padding: 12px 14px; }
+  .tablet .nav { padding: 0 14px; }
+  .tablet .nav-link:not(.active) { display: none; }
+  .tablet .kpi-row { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .tablet .chart-row { grid-template-columns: 1fr; }
+  .tablet .chart-row-3 { grid-template-columns: 1fr; }
+
+  /* ── Legend ── */
+  .legend { margin-top: 18px; padding: 12px 14px; background: #fff; border: 1px solid #D4D1CA; border-radius: 6px; }
+  .legend-title { font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 500; color: #4A4A45; letter-spacing: 0.06em; margin-bottom: 10px; text-transform: uppercase; }
+  .legend-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px 16px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 8px; color: #6B6960; }
+  .legend-swatch { width: 20px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>LLM Eval Tool · Phase 2: Design · Wireframe 04 of 04</h1>
+  <h2>Dashboard</h2>
+  <p>medium fidelity · desktop (1280px) + tablet (768px) · both viewports</p>
+</div>
+
+<div class="frames">
+
+  <!-- ══════════════════════════════════════════
+       DESKTOP
+  ══════════════════════════════════════════ -->
+  <div class="frame-wrap">
+    <div class="frame-label">Desktop — 1280px</div>
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="browser-dots"><span></span><span></span><span></span></div>
+        <div class="browser-url">evaltools.dev/dashboard</div>
+      </div>
+      <div class="app">
+
+        <div class="nav">
+          <div class="nav-logo">eval<span>.</span>tool</div>
+          <div class="nav-links">
+            <div class="nav-link">submit</div>
+            <div class="nav-link">results</div>
+            <div class="nav-link active">dashboard</div>
+            <div class="nav-link">rubrics</div>
+            <div class="nav-user">MR</div>
+          </div>
+        </div>
+
+        <div class="page-content">
+
+          <!-- Toolbar -->
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <div class="page-title">Dashboard</div>
+              <div class="page-subtitle">GET /api/v1/dashboard · auto-refreshes every 30 s</div>
+            </div>
+            <div class="toolbar-right">
+              <div class="time-pills">
+                <div class="time-pill">7d</div>
+                <div class="time-pill active">30d</div>
+                <div class="time-pill">90d</div>
+                <div class="time-pill">all</div>
+              </div>
+              <div class="wf-btn ghost">export CSV</div>
+              <div class="wf-btn primary">+ new job</div>
+            </div>
+          </div>
+
+          <!-- KPI row -->
+          <div class="kpi-row">
+            <div class="kpi-card">
+              <div class="kpi-label">total jobs</div>
+              <div class="kpi-value">247</div>
+              <div class="kpi-delta delta-up">↑ 18 this week</div>
+              <div class="kpi-sub">vs 229 last period</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">mean composite</div>
+              <div class="kpi-value" style="color:#0F6E56;">3.84</div>
+              <div class="kpi-delta delta-up">↑ 0.12 vs last period</div>
+              <div class="kpi-sub">out of 5.0</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">queue depth</div>
+              <div class="kpi-value" style="color:#854F0B;">3</div>
+              <div class="kpi-delta delta-neutral">— stable</div>
+              <div class="kpi-sub">max workers: 4</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">cache hit rate</div>
+              <div class="kpi-value">14%</div>
+              <div class="kpi-delta delta-up">↑ 3% vs last period</div>
+              <div class="kpi-sub">35 of 247 jobs cached</div>
+            </div>
+          </div>
+
+          <!-- Row 1: Score histogram + Dimension averages -->
+          <div class="chart-row">
+
+            <!-- Histogram -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">
+                  <div class="card-title-dot" style="background:#534AB7"></div>
+                  score distribution
+                </div>
+                <div class="card-hint">composite scores · n=247</div>
+              </div>
+              <div class="card-body" style="padding-bottom:8px;">
+                <div class="histogram">
+                  <div class="hist-bar-wrap">
+                    <div class="hist-count">4</div>
+                    <div class="hist-bar" style="height:12px;background:#F09595;"></div>
+                    <div class="hist-label">1.0</div>
+                  </div>
+                  <div class="hist-bar-wrap">
+                    <div class="hist-count">7</div>
+                    <div class="hist-bar" style="height:20px;background:#F09595;"></div>
+                    <div class="hist-label">1.5</div>
+                  </div>
+                  <div class="hist-bar-wrap">
+                    <div class="hist-count">11</div>
+                    <div class="hist-bar" style="height:32px;background:#FAC775;"></div>
+                    <div class="hist-label">2.0</div>
+                  </div>
+                  <div class="hist-bar-wrap">
+                    <div class="hist-count">18</div>
+                    <div class="hist-bar" style="height:44px;background:#FAC775;"></div>
+                    <div class="hist-label">2.5</div>
+                  </div>
+                  <div class="hist-bar-wrap">
+                    <div class="hist-count">34</div>
+                    <div class="hist-bar" style="height:56px;background:#EF9F27;"></div>
+                    <div class="hist-label">3.0</div>
+                  </div>
+                  <div class="hist-bar-wrap">
+                    <div class="hist-count">52</div>
+                    <div class="hist-bar" style="height:68px;background:#5DCAA5;"></div>
+                    <div class="hist-label">3.5</div>
+                  </div>
+                  <div class="hist-bar-wrap">
+                    <div class="hist-count">61</div>
+                    <div class="hist-bar" style="height:70px;background:#1D9E75;"></div>
+                    <div class="hist-label">4.0</div>
+                  </div>
+                  <div class="hist-bar-wrap">
+                    <div class="hist-count">43</div>
+                    <div class="hist-bar" style="height:58px;background:#1D9E75;"></div>
+                    <div class="hist-label">4.5</div>
+                  </div>
+                  <div class="hist-bar-wrap">
+                    <div class="hist-count">17</div>
+                    <div class="hist-bar" style="height:28px;background:#0F6E56;"></div>
+                    <div class="hist-label">5.0</div>
+                  </div>
+                </div>
+                <div class="chart-x-axis">
+                  <span>low quality</span>
+                  <span>composite score →</span>
+                  <span>high quality</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dimension averages -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">
+                  <div class="card-title-dot" style="background:#1D9E75"></div>
+                  per-dimension averages
+                </div>
+                <div class="card-hint">mean score · 1–5 scale</div>
+              </div>
+              <div class="card-body">
+                <div class="dim-avg-rows">
+                  <div class="dim-avg-row">
+                    <div class="dim-avg-label">Correctness</div>
+                    <div class="dim-avg-track">
+                      <div class="dim-avg-fill" style="width:78%;background:#534AB7;"></div>
+                    </div>
+                    <div class="dim-avg-val" style="color:#534AB7;">3.9</div>
+                  </div>
+                  <div class="dim-avg-row">
+                    <div class="dim-avg-label">Relevance</div>
+                    <div class="dim-avg-track">
+                      <div class="dim-avg-fill" style="width:74%;background:#1D9E75;"></div>
+                    </div>
+                    <div class="dim-avg-val" style="color:#1D9E75;">3.7</div>
+                  </div>
+                  <div class="dim-avg-row">
+                    <div class="dim-avg-label">Faithfulness</div>
+                    <div class="dim-avg-track">
+                      <div class="dim-avg-fill" style="width:76%;background:#378ADD;"></div>
+                    </div>
+                    <div class="dim-avg-val" style="color:#378ADD;">3.8</div>
+                  </div>
+                </div>
+
+                <!-- Weighted composite reminder -->
+                <div style="margin-top:14px;padding-top:10px;border-top:1px solid #EDEBE6;">
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:7.5px;color:#8A8880;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">weighted composite</div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:#4A4A45;">
+                    (3.9 × 0.4) + (3.7 × 0.3) + (3.8 × 0.3) = <strong style="color:#1A1A18;">3.81</strong>
+                  </div>
+                  <div style="margin-top:8px;display:flex;gap:8px;">
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:7px;color:#8A8880;">
+                      Correctness drives the composite most — a 1-point drop in Correctness costs 0.4 composite points vs 0.3 for the others.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /chart-row -->
+
+          <!-- Row 2: Trend sparkline + Status donut + Queue gauge -->
+          <div class="chart-row-3">
+
+            <!-- Trend sparkline -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">
+                  <div class="card-title-dot" style="background:#185FA5"></div>
+                  mean composite over time
+                </div>
+                <div class="card-hint">30-day window · daily mean</div>
+              </div>
+              <div class="card-body" style="padding-bottom:6px;">
+                <div class="sparkline-wrap">
+                  <svg width="100%" height="60" viewBox="0 0 320 60" preserveAspectRatio="none">
+                    <!-- Grid lines -->
+                    <line x1="0" y1="12" x2="320" y2="12" stroke="#EDEBE6" stroke-width="0.5"/>
+                    <line x1="0" y1="30" x2="320" y2="30" stroke="#EDEBE6" stroke-width="0.5"/>
+                    <line x1="0" y1="48" x2="320" y2="48" stroke="#EDEBE6" stroke-width="0.5"/>
+                    <!-- Y labels -->
+                    <text x="0" y="14" font-family="IBM Plex Mono" font-size="7" fill="#ABAAA4">5.0</text>
+                    <text x="0" y="32" font-family="IBM Plex Mono" font-size="7" fill="#ABAAA4">3.0</text>
+                    <text x="0" y="50" font-family="IBM Plex Mono" font-size="7" fill="#ABAAA4">1.0</text>
+                    <!-- Area fill -->
+                    <path d="M20 44 L40 40 L60 38 L80 36 L100 38 L120 34 L140 30 L160 32 L180 28 L200 26 L220 24 L240 28 L260 22 L280 20 L300 18 L300 58 L20 58 Z"
+                          fill="#378ADD" fill-opacity="0.1"/>
+                    <!-- Line -->
+                    <path d="M20 44 L40 40 L60 38 L80 36 L100 38 L120 34 L140 30 L160 32 L180 28 L200 26 L220 24 L240 28 L260 22 L280 20 L300 18"
+                          fill="none" stroke="#378ADD" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+                    <!-- Current point -->
+                    <circle cx="300" cy="18" r="3" fill="#378ADD"/>
+                    <text x="288" y="14" font-family="IBM Plex Mono" font-size="7" fill="#378ADD">3.84</text>
+                  </svg>
+                </div>
+                <div class="sparkline-labels">
+                  <span>Mar 15</span>
+                  <span>Mar 22</span>
+                  <span>Mar 29</span>
+                  <span>Apr 5</span>
+                  <span>Apr 14</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right column: donut + gauge stacked -->
+            <div style="display:flex;flex-direction:column;gap:10px;">
+
+              <!-- Status donut -->
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">
+                    <div class="card-title-dot" style="background:#8A8880"></div>
+                    job status breakdown
+                  </div>
+                </div>
+                <div class="card-body" style="padding:10px 14px;">
+                  <div class="donut-wrap">
+                    <svg class="donut-svg" width="64" height="64" viewBox="0 0 64 64">
+                      <!-- Donut segments (stroke-dasharray technique) -->
+                      <!-- Total circumference for r=24: ~150.8 -->
+                      <!-- completed: 196/247 = 79% → 119px; failed: 12/247 = 5% → 7.5; processing: 3/247 = 1% → 1.5; queued: 36/247 = 15% → 22.6 -->
+                      <circle cx="32" cy="32" r="24" fill="none" stroke="#1D9E75" stroke-width="8"
+                              stroke-dasharray="119 31.8" stroke-dashoffset="37.7" stroke-linecap="butt"/>
+                      <circle cx="32" cy="32" r="24" fill="none" stroke="#E24B4A" stroke-width="8"
+                              stroke-dasharray="7.5 143.3" stroke-dashoffset="-81.3" stroke-linecap="butt"/>
+                      <circle cx="32" cy="32" r="24" fill="none" stroke="#EF9F27" stroke-width="8"
+                              stroke-dasharray="3 147.8" stroke-dashoffset="-88.8" stroke-linecap="butt"/>
+                      <circle cx="32" cy="32" r="24" fill="none" stroke="#7F77DD" stroke-width="8"
+                              stroke-dasharray="22.6 128.2" stroke-dashoffset="-91.8" stroke-linecap="butt"/>
+                      <!-- Center label -->
+                      <text x="32" y="29" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" font-weight="500" fill="#1A1A18">247</text>
+                      <text x="32" y="40" text-anchor="middle" font-family="IBM Plex Mono" font-size="6" fill="#8A8880">total</text>
+                    </svg>
+                    <div class="donut-legend">
+                      <div class="donut-legend-row">
+                        <div class="donut-dot" style="background:#1D9E75"></div>
+                        <div class="donut-name">completed</div>
+                        <div class="donut-count">196</div>
+                        <div class="donut-pct">79%</div>
+                      </div>
+                      <div class="donut-legend-row">
+                        <div class="donut-dot" style="background:#7F77DD"></div>
+                        <div class="donut-name">queued</div>
+                        <div class="donut-count">36</div>
+                        <div class="donut-pct">15%</div>
+                      </div>
+                      <div class="donut-legend-row">
+                        <div class="donut-dot" style="background:#E24B4A"></div>
+                        <div class="donut-name">failed</div>
+                        <div class="donut-count">12</div>
+                        <div class="donut-pct">5%</div>
+                      </div>
+                      <div class="donut-legend-row">
+                        <div class="donut-dot" style="background:#EF9F27"></div>
+                        <div class="donut-name">processing</div>
+                        <div class="donut-count">3</div>
+                        <div class="donut-pct">1%</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Queue depth gauge -->
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">
+                    <div class="card-title-dot" style="background:#EF9F27"></div>
+                    live queue depth
+                  </div>
+                  <div class="card-hint">refreshes every 5 s</div>
+                </div>
+                <div class="card-body" style="padding:10px 14px;">
+                  <div class="gauge-wrap" style="flex-direction:row;align-items:center;gap:12px;padding:0;">
+                    <div style="display:flex;flex-direction:column;align-items:center;">
+                      <div class="gauge-number">3</div>
+                      <div class="gauge-label">jobs waiting</div>
+                    </div>
+                    <div style="flex:1;">
+                      <div style="font-family:'IBM Plex Mono',monospace;font-size:7.5px;color:#8A8880;margin-bottom:4px;">capacity · max 500</div>
+                      <div class="gauge-track"><div class="gauge-fill" style="width:0.6%;"></div></div>
+                      <div class="gauge-limits"><span>0</span><span>500</span></div>
+                      <div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:7px;color:#8A8880;">workers: 4 active / 4 max</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div><!-- /chart-row-3 -->
+
+          <!-- Row 3: Recent jobs -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <div class="card-title-dot" style="background:#8A8880"></div>
+                recent jobs
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div class="card-hint">last 5 · sorted by submitted desc</div>
+                <div class="wf-btn ghost" style="height:20px;font-size:7px;padding:0 7px;">view all →</div>
+              </div>
+            </div>
+            <div class="card-body" style="padding:6px 14px;">
+              <div class="mini-table">
+                <div class="mini-row">
+                  <div class="mini-id">a3f8c1d2</div>
+                  <div class="mini-prompt">Explain the difference between supervised and unsupervised learning...</div>
+                  <div class="mini-score score-hi">4.6</div>
+                  <div><div class="status-badge badge-completed"><div class="status-dot"></div>done</div></div>
+                </div>
+                <div class="mini-row">
+                  <div class="mini-id">b7e2a904</div>
+                  <div class="mini-prompt">What are the main advantages of transformer architecture over RNNs...</div>
+                  <div class="mini-score score-mid">3.1</div>
+                  <div><div class="status-badge badge-completed"><div class="status-dot"></div>done</div></div>
+                </div>
+                <div class="mini-row">
+                  <div class="mini-id">c1d4f623</div>
+                  <div class="mini-prompt">Summarise the key findings from this clinical trial report...</div>
+                  <div class="mini-score" style="color:#ABAAA4;">—</div>
+                  <div><div class="status-badge badge-processing"><div class="status-dot"></div>running</div></div>
+                </div>
+                <div class="mini-row">
+                  <div class="mini-id">d9b3e217</div>
+                  <div class="mini-prompt">Write a Python function that implements binary search...</div>
+                  <div class="mini-score" style="color:#ABAAA4;">—</div>
+                  <div><div class="status-badge" style="background:#EEEDFE;color:#534AB7;"><div class="status-dot" style="background:#7F77DD;"></div>queued</div></div>
+                </div>
+                <div class="mini-row">
+                  <div class="mini-id">e4c7a108</div>
+                  <div class="mini-prompt">Explain the difference between supervised and unsupervised learning...</div>
+                  <div class="mini-score score-hi">4.6</div>
+                  <div><div class="status-badge badge-cached"><div class="status-dot"></div>cached</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /page-content -->
+
+        <div class="status-bar">
+          <div class="status-indicator"><div class="status-dot-green"></div>API connected · auto-refresh in 28 s</div>
+          <div class="status-indicator">last updated: just now</div>
+        </div>
+
+      </div>
+    </div>
+    <div class="frame-dim">1280 × 920 · Chrome · 100%</div>
+
+    <div class="annotations">
+      <div class="annotation"><div class="ann-num">1</div>KPI row: four headline numbers — total jobs, mean composite (color-coded by tier), live queue depth, and cache hit rate. Delta indicators show period-over-period change. Time-range pills control all charts simultaneously.</div>
+      <div class="annotation"><div class="ann-num">2</div>Score histogram: bars color-coded by quality tier — red ≤2.0, amber 2.0–3.0, yellow-green 3.0–3.5, teal 3.5–4.5, dark teal 5.0. Visualizes the distribution shape at a glance without reading individual numbers.</div>
+      <div class="annotation"><div class="ann-num">3</div>Dimension averages: per-dimension bar chart with the weighted composite formula shown explicitly below. Surfaces the insight that Correctness drives composite score most — key for rubric design decisions.</div>
+      <div class="annotation"><div class="ann-num">4</div>Trend sparkline: daily mean composite over the selected time window. Area fill under the line. Rightmost point shows current value. All chart data hits GET /api/v1/dashboard.</div>
+      <div class="annotation"><div class="ann-num">5</div>Status donut + queue gauge live-refresh independently: donut every 30 s, queue depth every 5 s. Queue gauge uses a log-scale bar since values are almost always near zero against a 500-cap.</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TABLET
+  ══════════════════════════════════════════ -->
+  <div class="frame-wrap">
+    <div class="frame-label">Tablet — 768px</div>
+    <div class="browser tablet">
+      <div class="browser-bar">
+        <div class="browser-dots"><span></span><span></span><span></span></div>
+        <div class="browser-url">evaltools.dev/dashboard</div>
+      </div>
+      <div class="app">
+
+        <div class="nav">
+          <div class="nav-logo">eval<span>.</span>tool</div>
+          <div class="nav-links">
+            <div class="nav-link active">dashboard</div>
+            <div class="nav-user">MR</div>
+          </div>
+        </div>
+
+        <div class="page-content">
+
+          <!-- Toolbar condensed -->
+          <div class="toolbar" style="flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+            <div class="toolbar-left">
+              <div class="page-title">Dashboard</div>
+              <div class="page-subtitle">30-day window</div>
+            </div>
+            <div class="toolbar-right">
+              <div class="time-pills">
+                <div class="time-pill">7d</div>
+                <div class="time-pill active">30d</div>
+                <div class="time-pill">90d</div>
+              </div>
+              <div class="wf-btn primary" style="font-size:7.5px;">+ job</div>
+            </div>
+          </div>
+
+          <!-- KPI 2-col on tablet -->
+          <div class="kpi-row" style="grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+            <div class="kpi-card" style="padding:10px 12px;">
+              <div class="kpi-label">total jobs</div>
+              <div class="kpi-value" style="font-size:20px;">247</div>
+              <div class="kpi-delta delta-up">↑ 18 this week</div>
+            </div>
+            <div class="kpi-card" style="padding:10px 12px;">
+              <div class="kpi-label">mean composite</div>
+              <div class="kpi-value" style="font-size:20px;color:#0F6E56;">3.84</div>
+              <div class="kpi-delta delta-up">↑ 0.12</div>
+            </div>
+            <div class="kpi-card" style="padding:10px 12px;">
+              <div class="kpi-label">queue depth</div>
+              <div class="kpi-value" style="font-size:20px;color:#854F0B;">3</div>
+              <div class="kpi-delta delta-neutral">— stable</div>
+            </div>
+            <div class="kpi-card" style="padding:10px 12px;">
+              <div class="kpi-label">cache hit rate</div>
+              <div class="kpi-value" style="font-size:20px;">14%</div>
+              <div class="kpi-delta delta-up">↑ 3%</div>
+            </div>
+          </div>
+
+          <!-- Charts stacked on tablet -->
+          <div style="display:flex;flex-direction:column;gap:10px;">
+
+            <!-- Histogram -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title"><div class="card-title-dot" style="background:#534AB7"></div>score distribution</div>
+                <div class="card-hint">n=247</div>
+              </div>
+              <div class="card-body" style="padding-bottom:8px;">
+                <div class="histogram" style="height:60px;">
+                  <div class="hist-bar-wrap"><div class="hist-count" style="font-size:6px;">4</div><div class="hist-bar" style="height:10px;background:#F09595;"></div><div class="hist-label">1.0</div></div>
+                  <div class="hist-bar-wrap"><div class="hist-count" style="font-size:6px;">7</div><div class="hist-bar" style="height:16px;background:#F09595;"></div><div class="hist-label">1.5</div></div>
+                  <div class="hist-bar-wrap"><div class="hist-count" style="font-size:6px;">11</div><div class="hist-bar" style="height:26px;background:#FAC775;"></div><div class="hist-label">2.0</div></div>
+                  <div class="hist-bar-wrap"><div class="hist-count" style="font-size:6px;">18</div><div class="hist-bar" style="height:36px;background:#FAC775;"></div><div class="hist-label">2.5</div></div>
+                  <div class="hist-bar-wrap"><div class="hist-count" style="font-size:6px;">34</div><div class="hist-bar" style="height:44px;background:#EF9F27;"></div><div class="hist-label">3.0</div></div>
+                  <div class="hist-bar-wrap"><div class="hist-count" style="font-size:6px;">52</div><div class="hist-bar" style="height:54px;background:#5DCAA5;"></div><div class="hist-label">3.5</div></div>
+                  <div class="hist-bar-wrap"><div class="hist-count" style="font-size:6px;">61</div><div class="hist-bar" style="height:60px;background:#1D9E75;"></div><div class="hist-label">4.0</div></div>
+                  <div class="hist-bar-wrap"><div class="hist-count" style="font-size:6px;">43</div><div class="hist-bar" style="height:48px;background:#1D9E75;"></div><div class="hist-label">4.5</div></div>
+                  <div class="hist-bar-wrap"><div class="hist-count" style="font-size:6px;">17</div><div class="hist-bar" style="height:24px;background:#0F6E56;"></div><div class="hist-label">5.0</div></div>
+                </div>
+                <div class="chart-x-axis" style="font-size:6.5px;"><span>low</span><span>composite score</span><span>high</span></div>
+              </div>
+            </div>
+
+            <!-- Dimension averages -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title"><div class="card-title-dot" style="background:#1D9E75"></div>per-dimension averages</div>
+              </div>
+              <div class="card-body">
+                <div class="dim-avg-rows" style="gap:8px;">
+                  <div class="dim-avg-row">
+                    <div class="dim-avg-label" style="width:68px;">Correctness</div>
+                    <div class="dim-avg-track"><div class="dim-avg-fill" style="width:78%;background:#534AB7;"></div></div>
+                    <div class="dim-avg-val" style="color:#534AB7;">3.9</div>
+                  </div>
+                  <div class="dim-avg-row">
+                    <div class="dim-avg-label" style="width:68px;">Relevance</div>
+                    <div class="dim-avg-track"><div class="dim-avg-fill" style="width:74%;background:#1D9E75;"></div></div>
+                    <div class="dim-avg-val" style="color:#1D9E75;">3.7</div>
+                  </div>
+                  <div class="dim-avg-row">
+                    <div class="dim-avg-label" style="width:68px;">Faithfulness</div>
+                    <div class="dim-avg-track"><div class="dim-avg-fill" style="width:76%;background:#378ADD;"></div></div>
+                    <div class="dim-avg-val" style="color:#378ADD;">3.8</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Status donut + queue side by side on tablet -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div class="card">
+                <div class="card-header"><div class="card-title"><div class="card-title-dot" style="background:#8A8880"></div>status</div></div>
+                <div class="card-body" style="padding:8px 12px;">
+                  <div class="donut-wrap" style="gap:10px;">
+                    <svg width="52" height="52" viewBox="0 0 64 64">
+                      <circle cx="32" cy="32" r="24" fill="none" stroke="#1D9E75" stroke-width="8" stroke-dasharray="119 31.8" stroke-dashoffset="37.7"/>
+                      <circle cx="32" cy="32" r="24" fill="none" stroke="#E24B4A" stroke-width="8" stroke-dasharray="7.5 143.3" stroke-dashoffset="-81.3"/>
+                      <circle cx="32" cy="32" r="24" fill="none" stroke="#EF9F27" stroke-width="8" stroke-dasharray="3 147.8" stroke-dashoffset="-88.8"/>
+                      <circle cx="32" cy="32" r="24" fill="none" stroke="#7F77DD" stroke-width="8" stroke-dasharray="22.6 128.2" stroke-dashoffset="-91.8"/>
+                      <text x="32" y="30" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" font-weight="500" fill="#1A1A18">247</text>
+                      <text x="32" y="40" text-anchor="middle" font-family="IBM Plex Mono" font-size="6" fill="#8A8880">total</text>
+                    </svg>
+                    <div class="donut-legend" style="gap:4px;">
+                      <div class="donut-legend-row"><div class="donut-dot" style="background:#1D9E75"></div><div class="donut-name" style="font-size:7.5px;">done</div><div class="donut-count" style="font-size:7.5px;">196</div></div>
+                      <div class="donut-legend-row"><div class="donut-dot" style="background:#7F77DD"></div><div class="donut-name" style="font-size:7.5px;">queued</div><div class="donut-count" style="font-size:7.5px;">36</div></div>
+                      <div class="donut-legend-row"><div class="donut-dot" style="background:#E24B4A"></div><div class="donut-name" style="font-size:7.5px;">failed</div><div class="donut-count" style="font-size:7.5px;">12</div></div>
+                      <div class="donut-legend-row"><div class="donut-dot" style="background:#EF9F27"></div><div class="donut-name" style="font-size:7.5px;">running</div><div class="donut-count" style="font-size:7.5px;">3</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header"><div class="card-title"><div class="card-title-dot" style="background:#EF9F27"></div>queue</div></div>
+                <div class="card-body" style="padding:8px 12px;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                  <div class="gauge-number" style="font-size:28px;">3</div>
+                  <div class="gauge-label">jobs waiting</div>
+                  <div class="gauge-track" style="width:100%;"><div class="gauge-fill" style="width:0.6%;"></div></div>
+                  <div class="gauge-limits" style="width:100%;"><span>0</span><span>500 max</span></div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:7px;color:#8A8880;">4/4 workers active</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recent jobs condensed -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title"><div class="card-title-dot" style="background:#8A8880"></div>recent jobs</div>
+                <div class="wf-btn ghost" style="height:20px;font-size:7px;padding:0 7px;">view all →</div>
+              </div>
+              <div class="card-body" style="padding:6px 12px;">
+                <div class="mini-table">
+                  <div class="mini-row" style="grid-template-columns:64px 1fr 36px 44px;">
+                    <div class="mini-id" style="font-size:7px;">a3f8c1d2</div>
+                    <div class="mini-prompt" style="font-size:7.5px;">Explain supervised vs unsupervised learning...</div>
+                    <div class="mini-score score-hi" style="font-size:8px;">4.6</div>
+                    <div><div class="status-badge badge-completed" style="font-size:6px;padding:1px 4px;"><div class="status-dot"></div>done</div></div>
+                  </div>
+                  <div class="mini-row" style="grid-template-columns:64px 1fr 36px 44px;">
+                    <div class="mini-id" style="font-size:7px;">b7e2a904</div>
+                    <div class="mini-prompt" style="font-size:7.5px;">Transformer advantages over RNNs...</div>
+                    <div class="mini-score score-mid" style="font-size:8px;">3.1</div>
+                    <div><div class="status-badge badge-completed" style="font-size:6px;padding:1px 4px;"><div class="status-dot"></div>done</div></div>
+                  </div>
+                  <div class="mini-row" style="grid-template-columns:64px 1fr 36px 44px;">
+                    <div class="mini-id" style="font-size:7px;">c1d4f623</div>
+                    <div class="mini-prompt" style="font-size:7.5px;">Clinical trial report summary...</div>
+                    <div class="mini-score" style="color:#ABAAA4;font-size:8px;">—</div>
+                    <div><div class="status-badge badge-processing" style="font-size:6px;padding:1px 4px;"><div class="status-dot"></div>run</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="status-bar">
+          <div class="status-indicator"><div class="status-dot-green"></div>connected</div>
+          <div class="status-indicator">refresh in 28 s</div>
+        </div>
+
+      </div>
+    </div>
+    <div class="frame-dim">768 × 920 · Chrome · 100%</div>
+
+    <div class="annotations">
+      <div class="annotation"><div class="ann-num">A</div>KPI cards collapse to 2×2 grid on tablet. Delta labels shorten. Export CSV button moves to avatar dropdown.</div>
+      <div class="annotation"><div class="ann-num">B</div>All chart cards stack to a single column. Histogram and dimension averages remain full-width — they're data-dense enough to warrant it.</div>
+      <div class="annotation"><div class="ann-num">C</div>Status donut and queue gauge sit side-by-side in a 2-col grid — both are compact enough to share a row at 768px without crowding.</div>
+      <div class="annotation"><div class="ann-num">D</div>Recent jobs table drops the trend sparkline on tablet (time-range filtering still works via pills). Recent jobs list truncates to 3 rows.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Legend ── -->
+<div class="legend">
+  <div class="legend-title">Dashboard color system</div>
+  <div class="legend-grid">
+    <div class="legend-item"><div class="legend-swatch" style="background:#F09595;"></div>Score 1.0–1.5 · Red</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#FAC775;"></div>Score 2.0–2.5 · Amber light</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#EF9F27;"></div>Score 3.0 · Amber</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#5DCAA5;"></div>Score 3.5 · Teal light</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#1D9E75;"></div>Score 4.0–4.5 · Teal</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#0F6E56;"></div>Score 5.0 · Teal dark</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#378ADD;"></div>Trend line · Blue 400</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#534AB7;"></div>Correctness · Purple</div>
+  </div>
+</div>
+
+</body>
+</html>
